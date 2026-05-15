@@ -15,33 +15,35 @@ const jetbrainsMono = JetBrains_Mono({
 });
 
 export const metadata: Metadata = {
-  metadataBase: new URL("https://electrocode.dev"),
-  title: "ElectroCODE — The Hardware Hacker's IDE for Pico, Arduino & ESP32",
+  metadataBase: new URL("https://stratumstudio.dev"),
+  title: "Stratum Studio — The Hardware Engineer's IDE for Pico, Arduino & ESP32",
   description:
-    "Download ElectroCODE, the free mobile-friendly IDE for MicroPython, Arduino, and ESP32 development. Works on PC, Mac, and Android.",
+    "Download Stratum Studio, the free cross-platform IDE for MicroPython, Arduino, and ESP32 development. Works on PC, Mac, and Android.",
   keywords: [
     "MicroPython IDE",
     "ESP32 editor",
     "Arduino IDE alternative",
     "Raspberry Pi Pico IDE",
-    "ElectroCODE",
+    "Stratum Studio",
+    "hardware IDE",
+    "firmware development",
   ],
-  authors: [{ name: "ElectroCODE Team" }],
-  creator: "ElectroCODE",
+  authors: [{ name: "Stratum Studio Team" }],
+  creator: "Shaurya Prabhakar",
   openGraph: {
     type: "website",
     locale: "en_US",
-    url: "https://electrocode.dev",
-    title: "ElectroCODE — The Hardware Hacker's IDE",
+    url: "https://stratumstudio.dev",
+    title: "Stratum Studio — The Hardware Engineer's IDE",
     description:
-      "Download ElectroCODE, the free mobile-friendly IDE for MicroPython, Arduino, and ESP32 development.",
-    siteName: "ElectroCODE",
+      "Download Stratum Studio, the free cross-platform IDE for MicroPython, Arduino, and ESP32 development.",
+    siteName: "Stratum Studio",
   },
   twitter: {
     card: "summary_large_image",
-    title: "ElectroCODE — The Hardware Hacker's IDE",
+    title: "Stratum Studio — The Hardware Engineer's IDE",
     description:
-      "Download ElectroCODE, the free mobile-friendly IDE for MicroPython, Arduino, and ESP32 development.",
+      "Download Stratum Studio, the free cross-platform IDE for MicroPython, Arduino, and ESP32 development.",
   },
   robots: {
     index: true,
@@ -57,7 +59,7 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#050508",
+  themeColor: "#030306",
   width: "device-width",
   initialScale: 1,
 };

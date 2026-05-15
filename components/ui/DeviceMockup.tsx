@@ -28,7 +28,7 @@ function CodeEditorMockup({ mobile = false }: { mobile?: boolean }) {
           <div className="h-2.5 w-2.5 rounded-full bg-[#f59e0b]/80" />
           <div className="h-2.5 w-2.5 rounded-full bg-[#22C55E]/80" />
         </div>
-        <span className="ml-3 font-mono text-[10px] text-white/30">main.py — ElectroCODE</span>
+        <span className="ml-3 font-mono text-[10px] text-white/30">main.py — Stratum Studio</span>
       </div>
 
       {/* Tab bar */}
@@ -120,7 +120,7 @@ export default function DeviceMockup() {
   const opacity = useTransform(scrollYProgress, [0, 0.3], [0, 1]);
 
   return (
-    <div ref={ref} className="flex flex-col items-center justify-center gap-12 lg:flex-row lg:gap-16">
+    <div ref={ref} className="relative flex flex-col items-center justify-center gap-12 lg:flex-row lg:gap-16">
       <motion.div style={{ x: laptopX, opacity }}>
         <LaptopMockup />
       </motion.div>

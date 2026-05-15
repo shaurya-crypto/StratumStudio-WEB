@@ -1,9 +1,9 @@
 "use client";
 
 import { useRef, useEffect, useState } from "react";
-import { Canvas, useFrame, useThree } from "@react-three/fiber";
-import { Float } from "@react-three/drei";
+import { Canvas, useFrame, useThree, invalidate } from "@react-three/fiber";
 import { EffectComposer, Bloom, Vignette } from "@react-three/postprocessing";
+import { Preload, AdaptiveDpr, AdaptiveEvents } from "@react-three/drei";
 import * as THREE from "three";
 import PicoModel from "./PicoModel";
 import ArduinoModel from "./ArduinoModel";
@@ -12,12 +12,23 @@ import Particles from "./Particles";
 
 const mousePos = { x: 0, y: 0 };
 
+function useIsMobile() {
+  const [isMobile, setIsMobile] = useState(false);
+  useEffect(() => {
+    const check = () => setIsMobile(window.innerWidth < 768);
+    check();
+    window.addEventListener("resize", check);
+    return () => window.removeEventListener("resize", check);
+  }, []);
+  return isMobile;
+}
+
 /* ── Ease out cubic ── */
 function easeOut(t: number) {
   return 1 - Math.pow(1 - Math.min(Math.max(t, 0), 1), 3);
 }
 
-function Scene() {
+function Scene({ isMobile }: { isMobile: boolean }) {
   const groupRef = useRef<THREE.Group>(null!);
   const picoRef = useRef<THREE.Group>(null!);
   const arduinoRef = useRef<THREE.Group>(null!);
@@ -34,6 +45,9 @@ function Scene() {
       groupRef.current.rotation.y = THREE.MathUtils.lerp(groupRef.current.rotation.y, mousePos.x * 0.12, 0.03);
       groupRef.current.rotation.x = THREE.MathUtils.lerp(groupRef.current.rotation.x, mousePos.y * 0.06, 0.03);
     }
+
+    // Always invalidate during animation
+    invalidate();
 
     /* ── OPENING SEQUENCE: 0-3s ── */
     const ENTRY_DUR = 2.5;
@@ -159,43 +173,76 @@ function Scene() {
         </group>
       </group>
 
-      <Particles />
+      {!isMobile && <Particles />}
 
       {/* ── Post-processing ── */}
-      <EffectComposer multisampling={4}>
-        <Bloom intensity={1.0} luminanceThreshold={0.4} luminanceSmoothing={0.9} mipmapBlur />
+      <EffectComposer multisampling={isMobile ? 0 : 4}>
+        <Bloom intensity={isMobile ? 0.4 : 1.0} luminanceThreshold={0.4} luminanceSmoothing={0.9} mipmapBlur={!isMobile} />
         <Vignette offset={0.25} darkness={0.5} eskil={false} />
       </EffectComposer>
     </>
   );
 }
 
+// Suppress THREE.Clock deprecation warnings
+if (typeof window !== "undefined") {
+  const origWarn = console.warn;
+  console.warn = (...args: any[]) => {
+    if (typeof args[0] === "string" && args[0].includes("THREE.Clock")) return;
+    origWarn.apply(console, args);
+  };
+}
+
 export default function HeroCanvas() {
+  const isMobile = useIsMobile();
+  const [webglOk, setWebglOk] = useState(true);
+
+  useEffect(() => {
+    try {
+      const c = document.createElement("canvas");
+      if (!(c.getContext("webgl2") || c.getContext("webgl"))) setWebglOk(false);
+    } catch { setWebglOk(false); }
+  }, []);
+
   useEffect(() => {
     const onMouse = (e: MouseEvent) => {
       mousePos.x = (e.clientX / window.innerWidth) * 2 - 1;
       mousePos.y = -(e.clientY / window.innerHeight) * 2 + 1;
+      invalidate();
     };
-    window.addEventListener("mousemove", onMouse);
+    window.addEventListener("mousemove", onMouse, { passive: true });
     return () => window.removeEventListener("mousemove", onMouse);
   }, []);
 
+  if (!webglOk) {
+    return (
+      <div className="absolute inset-0 bg-gradient-to-b from-[#030306] via-[#060818] to-[#030306]">
+        <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(59,130,246,0.06),transparent_60%)]" />
+      </div>
+    );
+  }
+
   return (
     <Canvas
-      camera={{ position: [0, 2, 8], fov: 50 }}
-      dpr={[1, 2]}
+      camera={{ position: [0, 2, 8], fov: isMobile ? 65 : 50 }}
+      dpr={[1, 1.5]}
       gl={{
-        antialias: true,
+        antialias: !isMobile,
         toneMapping: THREE.ACESFilmicToneMapping,
         toneMappingExposure: 2.5,
         outputColorSpace: THREE.SRGBColorSpace,
-        powerPreference: "high-performance",
+        powerPreference: isMobile ? "default" : "high-performance",
       }}
+      frameloop="demand"
+      performance={{ min: 0.5 }}
       style={{ position: "absolute", inset: 0 }}
     >
-      <color attach="background" args={["#050508"]} />
-      <fog attach="fog" args={["#050508", 10, 25]} />
-      <Scene />
+      <color attach="background" args={["#030306"]} />
+      <fog attach="fog" args={["#030306", 10, 25]} />
+      <Scene isMobile={isMobile} />
+      <Preload all />
+      <AdaptiveDpr pixelated />
+      <AdaptiveEvents />
     </Canvas>
   );
 }

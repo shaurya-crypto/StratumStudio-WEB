@@ -9,6 +9,6 @@ export default function robots(): MetadataRoute.Robots {
         disallow: ["/api/", "/private/"],
       },
     ],
-    sitemap: "https://electrocode.dev/sitemap.xml",
+    sitemap: "https://stratumstudio.dev/sitemap.xml",
   };
 }
