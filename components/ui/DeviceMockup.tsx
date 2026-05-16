@@ -1,7 +1,6 @@
 "use client";
 
-import { useRef, memo } from "react";
-import { motion, useScroll, useTransform } from "framer-motion";
+import { useRef, memo, useEffect } from "react";
 
 function CodeEditorMockup({ mobile = false }: { mobile?: boolean }) {
   const lines = [
@@ -110,23 +109,47 @@ const LaptopMockup = memo(function LaptopMockup() {
 
 export default function DeviceMockup() {
   const ref = useRef<HTMLDivElement>(null);
-  const { scrollYProgress } = useScroll({
-    target: ref,
-    offset: ["start end", "end start"],
-  });
+  const laptopRef = useRef<HTMLDivElement>(null);
+  const phoneRef = useRef<HTMLDivElement>(null);
 
-  const laptopX = useTransform(scrollYProgress, [0, 0.5], [-120, 0]);
-  const phoneX = useTransform(scrollYProgress, [0, 0.5], [120, 0]);
-  const opacity = useTransform(scrollYProgress, [0, 0.3], [0, 1]);
+  useEffect(() => {
+    const handleScroll = () => {
+      if (!ref.current || !laptopRef.current || !phoneRef.current) return;
+      
+      const rect = ref.current.getBoundingClientRect();
+      const viewportHeight = window.innerHeight;
+      
+      // Calculate progress (0 when top of element hits bottom of viewport, 1 when bottom hits top)
+      const progress = 1 - Math.max(0, Math.min(1, (rect.bottom) / (viewportHeight + rect.height)));
+      
+      // Laptop moves from left (-120 to 0)
+      const laptopX = Math.min(0, -120 + (progress * 240));
+      // Phone moves from right (120 to 0)
+      const phoneX = Math.max(0, 120 - (progress * 240));
+      
+      // Opacity fades in
+      const opacity = Math.min(1, progress * 3);
+
+      laptopRef.current.style.transform = `translateX(${laptopX}px)`;
+      laptopRef.current.style.opacity = opacity.toString();
+      
+      phoneRef.current.style.transform = `translateX(${phoneX}px)`;
+      phoneRef.current.style.opacity = opacity.toString();
+    };
+
+    window.addEventListener("scroll", handleScroll, { passive: true });
+    handleScroll(); // Initial check
+    return () => window.removeEventListener("scroll", handleScroll);
+  }, []);
 
   return (
-    <div ref={ref} className="relative flex flex-col items-center justify-center gap-12 lg:flex-row lg:gap-16">
-      <motion.div style={{ x: laptopX, opacity }}>
+    <div ref={ref} className="relative flex flex-col items-center justify-center gap-12 lg:flex-row lg:gap-16 overflow-visible p-4">
+      <div ref={laptopRef} className="transition-transform duration-100 ease-out will-change-transform" style={{ opacity: 0 }}>
         <LaptopMockup />
-      </motion.div>
-      <motion.div style={{ x: phoneX, opacity }}>
+      </div>
+      <div ref={phoneRef} className="transition-transform duration-100 ease-out will-change-transform" style={{ opacity: 0 }}>
         <PhoneMockup />
-      </motion.div>
+      </div>
     </div>
   );
 }

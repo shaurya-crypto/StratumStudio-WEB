@@ -8,9 +8,8 @@ export function useSmoothScroll() {
 
   useEffect(() => {
     const lenis = new Lenis({
-      lerp: 0.06,
+      lerp: 0.03,
       smoothWheel: true,
-      touchMultiplier: 1.5,
     });
 
     lenisRef.current = lenis;
@@ -32,5 +31,5 @@ export function useSmoothScroll() {
 
 export function SmoothScrollProvider({ children }: { children: React.ReactNode }) {
   useSmoothScroll();
-  return <div style={{ position: "relative" }}>{children}</div>;
+  return <>{children}</>;
 }

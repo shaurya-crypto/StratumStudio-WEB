@@ -4,7 +4,7 @@ import { useRef, useMemo, useState, useEffect } from "react";
 import { useFrame } from "@react-three/fiber";
 import * as THREE from "three";
 
-const COUNT = 200;
+const COUNT = 80;
 const RADIUS = 12;
 
 export default function Particles() {

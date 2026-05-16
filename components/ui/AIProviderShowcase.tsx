@@ -1,7 +1,6 @@
 "use client";
 
 import { useRef, useState, useEffect, useCallback } from "react";
-import { motion, AnimatePresence } from "framer-motion";
 import { TypeAnimation } from "react-type-animation";
 
 const useTypewriter = (text: string, speed = 50, onDone?: () => void) => {
@@ -30,8 +29,6 @@ const useTypewriter = (text: string, speed = 50, onDone?: () => void) => {
   return displayed;
 };
 
-const EASE = [0.16, 1, 0.3, 1] as const;
-
 const PROVIDERS = [
   { name: "OpenAI", color: "#10A37F", icon: "◆", desc: "GPT-4o · o3" },
   { name: "Anthropic", color: "#D4A574", icon: "◈", desc: "Claude Opus 4" },
@@ -47,18 +44,15 @@ const SELECTED = 2; // Gemini
 function AnimCursor({ x, y, clicking, visible }: { x: number; y: number; clicking: boolean; visible: boolean }) {
   if (!visible) return null;
   return (
-    <motion.div className="pointer-events-none absolute z-50"
-      animate={{ x, y }} transition={{ duration: 0.6, ease: [0.25, 0.46, 0.45, 0.94] }}>
+    <div className="pointer-events-none absolute z-50 transition-transform duration-[600ms] ease-[cubic-bezier(0.25,0.46,0.45,0.94)]"
+      style={{ transform: `translate(${x}px, ${y}px)` }}>
       <svg width="18" height="18" viewBox="0 0 20 20" className="drop-shadow-lg">
         <path d="M0 0 L0 16 L4.5 12 L8.5 19 L11 18 L7 11 L12 11 Z" fill="white" stroke="rgba(0,0,0,0.3)" strokeWidth="0.5" />
       </svg>
-      <AnimatePresence>
-        {clicking && (
-          <motion.div className="absolute -left-2 -top-2 h-5 w-5 rounded-full border border-white/25"
-            initial={{ scale: 0.5, opacity: 0.7 }} animate={{ scale: 2.5, opacity: 0 }} transition={{ duration: 0.5 }} />
-        )}
-      </AnimatePresence>
-    </motion.div>
+      {clicking && (
+        <div className="absolute -left-2 -top-2 h-5 w-5 rounded-full border border-white/25 animate-[ping_0.5s_cubic-bezier(0,0,0.2,1)_1]" />
+      )}
+    </div>
   );
 }
 
@@ -67,19 +61,19 @@ function ProvidersView({ hoveredIdx, selectedIdx, onSelect }: {
   hoveredIdx: number; selectedIdx: number; onSelect: () => void;
 }) {
   return (
-    <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} exit={{ opacity: 0, scale: 0.95 }}
-      transition={{ duration: 0.5, ease: EASE }} className="grid grid-cols-2 lg:grid-cols-3 gap-3">
+    <div className="grid grid-cols-2 lg:grid-cols-3 gap-3 animate-fade-up">
       {PROVIDERS.map((p, i) => {
         const isHovered = hoveredIdx === i;
         const isSelected = selectedIdx === i;
         const dimmed = selectedIdx !== -1 && selectedIdx !== i;
         return (
-          <motion.div key={p.name}
-            initial={{ opacity: 0, y: 20 }} animate={{
-              opacity: dimmed ? 0.25 : 1, y: isSelected ? -12 : 0,
-              scale: isSelected ? 1.06 : isHovered ? 1.02 : 1,
-            }}
-            transition={{ duration: 0.5, ease: EASE, delay: i * 0.06 }}>
+          <div key={p.name}
+            className={`transition-all duration-500 animate-fade-up`}
+            style={{ 
+              opacity: dimmed ? 0.25 : 1, 
+              transform: `translateY(${isSelected ? -12 : 0}px) scale(${isSelected ? 1.06 : isHovered ? 1.02 : 1})`,
+              animationDelay: `${i * 0.06}s`, animationFillMode: "both"
+            }}>
             <div className="relative overflow-hidden rounded-2xl p-[1px] transition-all duration-500" style={{
               background: isSelected ? `linear-gradient(135deg,${p.color}50,${p.color}15,${p.color}35)`
                 : isHovered ? "linear-gradient(135deg,rgba(255,255,255,0.08),rgba(255,255,255,0.02))"
@@ -103,26 +97,22 @@ function ProvidersView({ hoveredIdx, selectedIdx, onSelect }: {
                     <span className="text-white/40">~{35 + i * 12}ms</span>
                   </div>
                   <div className="h-0.5 overflow-hidden rounded-full bg-white/[0.04]">
-                    <motion.div className="h-full rounded-full" style={{ background: p.color }}
-                      initial={{ width: "0%" }} animate={{ width: `${88 - i * 7}%` }}
-                      transition={{ duration: 1, delay: 0.2 + i * 0.08, ease: EASE }} />
+                    <div className="h-full rounded-full transition-all duration-1000 ease-out" style={{ background: p.color, width: `${88 - i * 7}%` }} />
                   </div>
                 </div>
               </div>
             </div>
-          </motion.div>
+          </div>
         );
       })}
-    </motion.div>
+    </div>
   );
 }
 
 /* ── Step 1: API Key ── */
 function APIKeyView({ onDone }: { onDone: () => void }) {
   return (
-    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}
-      transition={{ duration: 0.6, ease: EASE }}
-      className="flex h-full items-center justify-center">
+    <div className="flex h-full items-center justify-center animate-fade-up">
       <div className="w-full max-w-sm">
         <div className="mb-4 flex items-center justify-center gap-2">
           <span className="text-lg" style={{ color: PROVIDERS[SELECTED].color }}>{PROVIDERS[SELECTED].icon}</span>
@@ -140,16 +130,14 @@ function APIKeyView({ onDone }: { onDone: () => void }) {
           </div>
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 }
 
 /* ── Step 2: AI Chat Bar ── */
 function ChatBarView({ onDone }: { onDone: () => void }) {
   return (
-    <motion.div initial={{ opacity: 0, y: 20 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0, y: -20 }}
-      transition={{ duration: 0.6, ease: EASE }}
-      className="flex h-full items-center justify-center">
+    <div className="flex h-full items-center justify-center animate-fade-up">
       <div className="w-full max-w-xl">
         <div className="mb-3 flex items-center gap-2 text-xs text-white/25">
           <div className="h-1.5 w-1.5 rounded-full bg-[#22C55E] animate-pulse" />
@@ -165,24 +153,16 @@ function ChatBarView({ onDone }: { onDone: () => void }) {
           </div>
         </div>
       </div>
-    </motion.div>
+    </div>
   );
 }
 
 /* ── Step 3: Code Editor ── */
 function EditorView() {
-  const CODE = `from machine import Pin
-from time import sleep
-
-led = Pin(25, Pin.OUT)
-
-while True:
-    led.toggle()
-    sleep(0.5)`;
+  const CODE = `from machine import Pin\nfrom time import sleep\n\nled = Pin(25, Pin.OUT)\n\nwhile True:\n    led.toggle()\n    sleep(0.5)`;
 
   return (
-    <motion.div initial={{ opacity: 0, scale: 0.92 }} animate={{ opacity: 1, scale: 1 }} exit={{ opacity: 0, scale: 0.95 }}
-      transition={{ duration: 0.6, ease: EASE }} className="h-full">
+    <div className="h-full animate-fade-up">
       <div className="overflow-hidden rounded-2xl border border-white/[0.04] bg-[#0a0b14]/90">
         <div className="flex items-center gap-1.5 border-b border-white/[0.03] px-4 py-2">
           <div className="h-2 w-2 rounded-full bg-[#ef4444]/60" />
@@ -200,25 +180,22 @@ while True:
             </div>
         </div>
         <div className="flex items-center gap-4 border-t border-white/[0.03] px-4 py-2">
-          <motion.div className="flex items-center gap-1.5"
-            animate={{ opacity: [0.3, 1, 0.3] }} transition={{ repeat: Infinity, duration: 2 }}>
+          <div className="flex items-center gap-1.5 animate-pulse">
             <div className="h-1.5 w-1.5 rounded-full bg-[#8B5CF6]" />
             <span className="text-[10px] text-white/30">AI generating...</span>
-          </motion.div>
+          </div>
           <div className="flex-1 h-px bg-white/[0.03]" />
           <span className="text-[10px] text-white/15 font-mono">142 tokens</span>
         </div>
       </div>
       {/* Title reveal */}
-      <motion.div className="mt-6 text-center"
-        initial={{ opacity: 0, y: 10 }} animate={{ opacity: 1, y: 0 }}
-        transition={{ delay: 2, duration: 0.8, ease: EASE }}>
+      <div className="mt-6 text-center animate-fade-up" style={{ animationDelay: "2s", animationFillMode: "both" }}>
         <h3 className="text-lg font-bold text-white" style={{ animation: "breathe-glow 3s ease-in-out infinite" }}>
           Stratum Studio <span className="bg-gradient-to-r from-[#3B82F6] to-[#8B5CF6] bg-clip-text text-transparent">AI</span>
         </h3>
         <p className="mt-1 text-[11px] text-white/25">Intelligent workflow orchestration.</p>
-      </motion.div>
-    </motion.div>
+      </div>
+    </div>
   );
 }
 
@@ -315,9 +292,7 @@ export default function AIProviderShowcase() {
 
       <div className="mx-auto max-w-5xl">
         {/* Header */}
-        <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }}
-          viewport={{ once: true }} transition={{ duration: 0.8, ease: EASE }}
-          className="mb-14 text-center">
+        <div className="mb-14 text-center animate-fade-up">
           <span className="mb-4 inline-block rounded-full border border-[#8B5CF6]/20 bg-[#8B5CF6]/5 px-4 py-1.5 text-xs font-medium tracking-widest text-[#8B5CF6] uppercase">
             AI-Powered
           </span>
@@ -327,7 +302,7 @@ export default function AIProviderShowcase() {
           <p className="mx-auto mt-4 max-w-lg text-white/30 text-sm">
             Connect any provider. Let AI write, debug, and deploy your firmware.
           </p>
-        </motion.div>
+        </div>
 
         {/* Dashboard Frame — fixed height */}
         <div className="relative overflow-hidden rounded-3xl border border-white/[0.04] bg-[#06070c]/70 backdrop-blur-sm"
@@ -348,21 +323,20 @@ export default function AIProviderShowcase() {
             </div>
 
             {/* State Machine Views */}
-            <AnimatePresence mode="wait">
-              {step === 0 && (
-                <ProvidersView key="providers" hoveredIdx={hoveredIdx} selectedIdx={selectedIdx}
-                  onSelect={() => setStep(1)} />
-              )}
-              {step === 1 && (
-                <APIKeyView key="apikey" onDone={() => setStep(2)} />
-              )}
-              {step === 2 && (
-                <ChatBarView key="chatbar" onDone={() => setStep(3)} />
-              )}
-              {step === 3 && (
-                <EditorView key="editor" />
-              )}
-            </AnimatePresence>
+            <div className="relative">
+              <div className={`transition-all duration-500 absolute w-full ${step === 0 ? 'opacity-100 z-10' : 'opacity-0 pointer-events-none'}`}>
+                {step === 0 && <ProvidersView hoveredIdx={hoveredIdx} selectedIdx={selectedIdx} onSelect={() => setStep(1)} />}
+              </div>
+              <div className={`transition-all duration-500 absolute w-full ${step === 1 ? 'opacity-100 z-10' : 'opacity-0 pointer-events-none'}`}>
+                {step === 1 && <APIKeyView onDone={() => setStep(2)} />}
+              </div>
+              <div className={`transition-all duration-500 absolute w-full ${step === 2 ? 'opacity-100 z-10' : 'opacity-0 pointer-events-none'}`}>
+                {step === 2 && <ChatBarView onDone={() => setStep(3)} />}
+              </div>
+              <div className={`transition-all duration-500 absolute w-full ${step === 3 ? 'opacity-100 z-10' : 'opacity-0 pointer-events-none'}`}>
+                {step === 3 && <EditorView />}
+              </div>
+            </div>
 
             {/* Cursor */}
             <AnimCursor x={cursorPos.x} y={cursorPos.y} clicking={clicking} visible={cursorVisible} />
@@ -372,16 +346,15 @@ export default function AIProviderShowcase() {
         {/* Feature bullets */}
         <div className="mt-10 grid grid-cols-2 lg:grid-cols-4 gap-4">
           {["Context-aware autocomplete", "One-click bug fixes", "Code documentation", "Multi-file refactoring"].map((item, i) => (
-            <motion.div key={i} initial={{ opacity: 0, y: 15 }} whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }} transition={{ delay: i * 0.08, duration: 0.5, ease: EASE }}
-              className="flex items-center gap-2 text-xs text-white/35">
+            <div key={i} className="flex items-center gap-2 text-xs text-white/35 animate-fade-up"
+              style={{ animationDelay: `${i * 0.08}s`, animationFillMode: "both" }}>
               <div className="flex h-4 w-4 items-center justify-center rounded-full bg-[#3B82F6]/8 text-[#3B82F6]">
                 <svg className="h-2.5 w-2.5" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                   <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2.5} d="M5 13l4 4L19 7" />
                 </svg>
               </div>
               {item}
-            </motion.div>
+            </div>
           ))}
         </div>
       </div>

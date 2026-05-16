@@ -1,7 +1,7 @@
 "use client";
 
 import React, { Suspense, useState, useEffect } from "react";
-import { motion, type Variants } from "framer-motion";
+
 import { Zap, Code2, Gamepad2, Radio, ChevronDown, Monitor, Laptop, Smartphone, Terminal } from "lucide-react";
 import dynamic from "next/dynamic";
 import Navbar from "@/components/ui/Navbar";
@@ -22,47 +22,12 @@ const HeroCanvas = dynamic(() => import("@/components/canvas/HeroCanvas"), {
   loading: () => null,
 });
 
-/* ── Animation Constants ── */
-const EASE = [0.16, 1, 0.3, 1] as [number, number, number, number];
-
-/* ── Character animation for hero title ── */
 const TITLE_PARTS = [
-  { text: "Stratum", colored: false },
-  { text: " Studio", colored: true },
+  { text: "Stratum ", colored: false },
+  { text: "Studio", colored: true },
 ];
 
-const charVariants: Variants = {
-  hidden: { opacity: 0, y: 80, rotateX: 90 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    rotateX: 0,
-    transition: { type: "spring", stiffness: 100, damping: 12 },
-  },
-};
-
-/* ── Subtitle word-by-word animation ── */
-const SUBTITLE_WORDS = "The hardware engineer's IDE. Code your Pico, Arduino & ESP32 from any device.".split(" ");
-
-const wordVariants: Variants = {
-  hidden: { opacity: 0, y: 20 },
-  visible: {
-    opacity: 1,
-    y: 0,
-    transition: { duration: 0.4, ease: "easeOut" },
-  },
-};
-
-/* ── CTA button animation ── */
-const buttonVariants: Variants = {
-  hidden: { opacity: 0, scale: 0.8, filter: "blur(10px)" },
-  visible: {
-    opacity: 1,
-    scale: 1,
-    filter: "blur(0px)",
-    transition: { duration: 0.6, ease: "easeOut" },
-  },
-};
+const SUBTITLE_WORDS = "The ultimate mobile-first IDE for embedded systems. AI-powered, browser-native, zero setup.".split(" ");
 
 /* ── Features data ── */
 const features = [
@@ -105,7 +70,7 @@ export default function HomePage() {
   const [show3D, setShow3D] = useState(false);
 
   useEffect(() => {
-    const timer = setTimeout(() => setShow3D(true), 150);
+    const timer = setTimeout(() => setShow3D(true), 200);
     return () => clearTimeout(timer);
   }, []);
 
@@ -166,116 +131,84 @@ export default function HomePage() {
             >
               {TITLE_PARTS.map((part) =>
                 part.text.split("").map((char, i) => (
-                  <motion.span
+                  <span
                     key={`${part.text}-${i}`}
-                    custom={i}
-                    variants={charVariants}
-                    initial="hidden"
-                    animate="visible"
-                    transition={{ delay: (part.colored ? 7 : 0) * 0.04 + i * 0.04 }}
-                    className="inline-block"
+                    className="inline-block animate-fade-up"
                     style={{
+                      animationDelay: `${(part.colored ? 7 : 0) * 0.04 + i * 0.04}s`,
                       color: part.colored ? "transparent" : "#ffffff",
                       backgroundImage: part.colored ? "linear-gradient(135deg, #3B82F6, #06B6D4)" : "none",
                       backgroundClip: part.colored ? "text" : "unset",
                       WebkitBackgroundClip: part.colored ? "text" : "unset",
                       transition: "color 0.075s",
+                      animationFillMode: "both"
                     }}
                   >
                     {char === " " ? "\u00A0" : char}
-                  </motion.span>
+                  </span>
                 ))
               )}
             </div>
 
             {/* Subtitle — word by word */}
-            <motion.p
-              className="mx-auto mt-6 max-w-xl text-lg leading-relaxed text-white/40 sm:text-xl"
-              initial="hidden"
-              animate="visible"
-              transition={{ staggerChildren: 0.06, delayChildren: 1.2 }}
-            >
+            <p className="mx-auto mt-6 max-w-xl text-lg leading-relaxed text-white/40 sm:text-xl">
               {SUBTITLE_WORDS.map((word, i) => (
-                <motion.span key={i} variants={wordVariants} className="mr-[0.3em] inline-block">
+                <span 
+                  key={i} 
+                  className="mr-[0.3em] inline-block animate-fade-up" 
+                  style={{ animationDelay: `${1.2 + i * 0.06}s`, animationFillMode: "both" }}
+                >
                   {word}
-                </motion.span>
+                </span>
               ))}
-            </motion.p>
+            </p>
 
             {/* CTA Buttons */}
-            <motion.div
-              className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center"
-              initial="hidden"
-              animate="visible"
-              transition={{ staggerChildren: 0.15, delayChildren: 2.0 }}
-            >
-              <motion.a
+            <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center animate-fade-up" style={{ animationDelay: "2.0s", animationFillMode: "both" }}>
+              <a
                 href="#download"
-                variants={buttonVariants}
-                whileHover={{
-                  y: -3,
-                  boxShadow: "0 20px 40px rgba(59,130,246,0.3), inset 0 0 0 1px rgba(59,130,246,0.3)",
-                }}
-                whileTap={{ scale: 0.97 }}
-                className="group relative inline-flex items-center gap-2.5 overflow-hidden rounded-xl bg-gradient-to-r from-[#3B82F6] to-[#2563eb] px-7 py-3.5 text-sm font-bold text-white"
+                className="group relative inline-flex items-center gap-2.5 overflow-hidden rounded-xl bg-gradient-to-r from-[#3B82F6] to-[#2563eb] px-7 py-3.5 text-sm font-bold text-white hover:-translate-y-[3px] hover:shadow-[0_20px_40px_rgba(59,130,246,0.3),inset_0_0_0_1px_rgba(59,130,246,0.3)] transition-all duration-300 active:scale-95"
               >
                 <span className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/15 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
                 <Monitor className="h-4 w-4" />
                 Download for PC
-              </motion.a>
+              </a>
 
-              <motion.a
+              <a
                 href="#download"
-                variants={buttonVariants}
-                whileHover={{
-                  y: -3,
-                  boxShadow: "0 20px 40px rgba(6,182,212,0.15), inset 0 0 0 1px rgba(6,182,212,0.2)",
-                }}
-                whileTap={{ scale: 0.97 }}
-                className="group relative inline-flex items-center gap-2.5 overflow-hidden rounded-xl border border-white/[0.06] bg-white/[0.02] px-7 py-3.5 text-sm font-bold text-white backdrop-blur-sm transition-colors hover:border-[#06B6D4]/20 hover:bg-white/[0.04]"
+                className="group relative inline-flex items-center gap-2.5 overflow-hidden rounded-xl border border-white/[0.06] bg-white/[0.02] px-7 py-3.5 text-sm font-bold text-white backdrop-blur-sm transition-all duration-300 hover:border-[#06B6D4]/20 hover:bg-white/[0.04] hover:-translate-y-[3px] hover:shadow-[0_20px_40px_rgba(6,182,212,0.15),inset_0_0_0_1px_rgba(6,182,212,0.2)] active:scale-95"
               >
                 <span className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/[0.05] to-transparent transition-transform duration-700 group-hover:translate-x-full" />
                 <Smartphone className="h-4 w-4" />
                 Get Mobile App
-              </motion.a>
-            </motion.div>
+              </a>
+            </div>
           </div>
 
           {/* Scroll indicator */}
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 2.5, duration: 0.8 }}
-            className="absolute bottom-10 left-1/2 -translate-x-1/2"
+          <div
+            className="absolute bottom-10 left-1/2 -translate-x-1/2 animate-fade-up"
+            style={{ animationDelay: "2.5s", animationFillMode: "both" }}
           >
-            <motion.div
-              animate={{
-                y: [0, 12, 0],
-                opacity: [0.3, 0.1, 0.3],
-              }}
-              transition={{ repeat: Infinity, duration: 1.5, ease: "easeInOut" }}
-            >
+            <div className="animate-bounce">
               <ChevronDown className="h-6 w-6 text-white/20" />
-            </motion.div>
-          </motion.div>
+            </div>
+          </div>
         </div>
       </section>
 
       {/* ====== CINEMATIC BOARD CAROUSEL ====== */}
       <section className="relative premium-bg">
         <div className="mx-auto max-w-5xl px-6 pt-24 pb-8 text-center">
-          <motion.div initial={{ opacity: 0, y: 20 }} whileInView={{ opacity: 1, y: 0 }} viewport={{ once: true }} transition={{ duration: 0.8, ease: EASE }}>
-            <motion.span
+          <div className="animate-fade-up">
+            <span
               className="mb-4 inline-block rounded-full border border-[#3B82F6]/20 bg-[#3B82F6]/5 px-4 py-1.5 text-xs font-medium tracking-widest text-[#3B82F6] uppercase"
-              initial={{ opacity: 0, scale: 0.9 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
             >
               Hardware
-            </motion.span>
+            </span>
             <h2 className="mt-4 text-3xl font-bold tracking-tight text-white sm:text-4xl">Supported <span className="bg-gradient-to-r from-[#3B82F6] to-[#06B6D4] bg-clip-text text-transparent">Boards</span></h2>
             <p className="mx-auto mt-4 max-w-lg text-white/35">Four boards. One IDE. Explore the hardware that Stratum Studio supports out of the box.</p>
-          </motion.div>
+          </div>
         </div>
         <Suspense fallback={<div className="h-[90vh] bg-[#030306]" />}>
           {show3D && <BoardCarousel />}
@@ -293,21 +226,14 @@ export default function HomePage() {
         <div className="gradient-orb gradient-orb-2" style={{ top: "20%", right: "-10%" }} />
 
         <div className="mx-auto max-w-5xl px-6 relative z-10">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, ease: EASE }}
-            className="mb-16 text-center"
+          <div
+            className="mb-16 text-center animate-fade-up"
           >
-            <motion.span
+            <span
               className="mb-4 inline-block rounded-full border border-[#22C55E]/20 bg-[#22C55E]/5 px-4 py-1.5 text-xs font-medium tracking-widest text-[#22C55E] uppercase"
-              initial={{ opacity: 0, scale: 0.9 }}
-              whileInView={{ opacity: 1, scale: 1 }}
-              viewport={{ once: true }}
             >
               Features
-            </motion.span>
+            </span>
             <h2 className="mt-4 text-3xl font-bold tracking-tight text-white sm:text-4xl">
               Features: Built for{" "}
               <span className="bg-gradient-to-r from-[#3B82F6] to-[#8B5CF6] bg-clip-text text-transparent">hardware engineers</span>
@@ -315,7 +241,7 @@ export default function HomePage() {
             <p className="mx-auto mt-4 max-w-lg text-white/35">
               Everything you need to write, deploy, and debug firmware — in one interface.
             </p>
-          </motion.div>
+          </div>
 
           <div className="grid gap-6 md:grid-cols-3">
             {features.map((feature, i) => (
@@ -329,12 +255,8 @@ export default function HomePage() {
       <section id="showcase" className="relative overflow-hidden py-32 premium-bg">
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_bottom,rgba(6,182,212,0.03),transparent_60%)]" />
         <div className="mx-auto max-w-6xl px-6 relative z-10">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, ease: EASE }}
-            className="mb-16 text-center"
+          <div
+            className="mb-16 text-center animate-fade-up"
           >
             <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
               One IDE.{" "}
@@ -343,7 +265,7 @@ export default function HomePage() {
             <p className="mx-auto mt-4 max-w-lg text-white/35">
               Seamless experience across desktop and mobile. Code anywhere, deploy everywhere.
             </p>
-          </motion.div>
+          </div>
 
           <DeviceMockup />
         </div>
@@ -353,11 +275,8 @@ export default function HomePage() {
       <section id="download" className="relative overflow-hidden py-32 premium-bg">
         <div className="gradient-orb gradient-orb-1" style={{ top: "-30%", left: "20%" }} />
         <div className="relative mx-auto max-w-3xl px-6 text-center z-10">
-          <motion.div
-            initial={{ opacity: 0, y: 20 }}
-            whileInView={{ opacity: 1, y: 0 }}
-            viewport={{ once: true }}
-            transition={{ duration: 0.8, ease: EASE }}
+          <div
+            className="animate-fade-up"
           >
             <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl lg:text-5xl">
               Download Now. <span className="text-white/30">No account needed.</span>
@@ -365,7 +284,7 @@ export default function HomePage() {
             <p className="mx-auto mt-4 max-w-md text-white/35">
               Download Stratum Studio and start coding for your hardware in under 60 seconds.
             </p>
-          </motion.div>
+          </div>
 
           <div className="mx-auto mt-12 grid max-w-xl grid-cols-1 sm:grid-cols-2 gap-4">
             <DownloadButton platform="Windows" subtitle=".exe installer" icon={<Monitor className="h-5 w-5" />} />
@@ -374,15 +293,12 @@ export default function HomePage() {
             <DownloadButton platform="Linux" subtitle=".AppImage" icon={<Terminal className="h-5 w-5" />} />
           </div>
 
-          <motion.p
-            initial={{ opacity: 0 }}
-            whileInView={{ opacity: 1 }}
-            viewport={{ once: true }}
-            transition={{ delay: 0.3, duration: 0.6 }}
-            className="mt-10 text-sm tracking-wide text-white/20"
+          <p
+            className="mt-10 text-sm tracking-wide text-white/20 animate-fade-up"
+            style={{ animationDelay: "0.3s", animationFillMode: "both" }}
           >
             Open Source &middot; Free Forever &middot; Built for Engineers
-          </motion.p>
+          </p>
         </div>
       </section>
 
@@ -411,7 +327,7 @@ export default function HomePage() {
         </div>
       </footer>
 
-    </SmoothScrollProvider >
+      </SmoothScrollProvider>
     </>
   );
 }

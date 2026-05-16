@@ -1,7 +1,6 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { motion } from "framer-motion";
 
 interface Beam {
   id: number; d: string; delay: number; duration: number;
@@ -52,12 +51,12 @@ export default function BackgroundBeams() {
           </filter>
         </defs>
         {beams.map((b) => (
-          <motion.path key={b.id} d={b.d}
+          <path key={b.id} d={b.d}
             stroke={`url(#beam-grad-${b.id})`} strokeWidth={b.width}
             fill="none" filter="url(#beam-glow)"
-            initial={{ pathLength: 0, opacity: 0 }}
-            animate={{ pathLength: [0, 1, 0], opacity: [0, 1, 0] }}
-            transition={{ duration: b.duration, delay: b.delay, repeat: Infinity, repeatDelay: 4, ease: "easeInOut" }}
+            pathLength="100"
+            className="animate-beam"
+            style={{ animationDelay: `${b.delay}s`, animationDuration: `${b.duration}s` }}
           />
         ))}
       </svg>

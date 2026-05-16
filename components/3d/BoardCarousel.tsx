@@ -2,9 +2,8 @@
 
 import { useRef, useEffect, useMemo, Suspense, useState, lazy } from "react";
 import { Canvas, useFrame, invalidate } from "@react-three/fiber";
-import { ContactShadows, AdaptiveDpr, AdaptiveEvents } from "@react-three/drei";
+import { AdaptiveDpr, AdaptiveEvents } from "@react-three/drei";
 import * as THREE from "three";
-import { motion, AnimatePresence } from "framer-motion";
 import { useCarouselLogic, BOARDS } from "@/hooks/useCarouselLogic";
 
 /* ── Performance detection ── */
@@ -37,7 +36,7 @@ function GlowPlatform({ color, isCenter }: { color: string; isCenter: boolean })
   return (
     <group position={[0, -0.12, 0]}>
       {/* Metallic disc */}
-      <mesh receiveShadow>
+      <mesh>
         <cylinderGeometry args={[1.6, 1.6, 0.04, 32]} />
         <meshStandardMaterial
           color="#0a0a0a"
@@ -164,9 +163,6 @@ function FollowSpot({ isMobile }: { isMobile: boolean }) {
         intensity={4}
         color="#e8eeff"
         distance={20}
-        castShadow={!isMobile}
-        shadow-mapSize-width={512}
-        shadow-mapSize-height={512}
       />
     </>
   );
@@ -208,15 +204,6 @@ function CarouselScene({ activeIndex, isMobile }: { activeIndex: number; isMobil
         <BoardSlot key={board.id} index={i} activeIndex={activeIndex} board={board} isMobile={isMobile} />
       ))}
 
-      <ContactShadows
-        position={[0, -0.16, 0]}
-        opacity={0.35}
-        scale={12}
-        blur={2.5}
-        far={4}
-        resolution={128}
-      />
-
       <AdaptiveDpr pixelated />
       <AdaptiveEvents />
     </>
@@ -226,19 +213,13 @@ function CarouselScene({ activeIndex, isMobile }: { activeIndex: number; isMobil
 /* ── Info panel overlay ── */
 function BoardInfo({ board }: { board: (typeof BOARDS)[0] }) {
   return (
-    <AnimatePresence mode="wait">
-      <motion.div
-        key={board.id}
-        initial={{ opacity: 0, y: 20, filter: "blur(8px)" }}
-        animate={{ opacity: 1, y: 0, filter: "blur(0px)" }}
-        exit={{ opacity: 0, y: -20, filter: "blur(8px)" }}
-        transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-        className="pointer-events-none absolute bottom-12 left-1/2 z-10 -translate-x-1/2 text-center"
-      >
-        <h3 className="text-2xl font-bold text-white sm:text-3xl">{board.name}</h3>
-        <p className="mt-1 text-sm text-white/40">{board.subtitle}</p>
-      </motion.div>
-    </AnimatePresence>
+    <div
+      key={board.id}
+      className="pointer-events-none absolute bottom-12 left-1/2 z-10 -translate-x-1/2 text-center animate-fade-up"
+    >
+      <h3 className="text-2xl font-bold text-white sm:text-3xl">{board.name}</h3>
+      <p className="mt-1 text-sm text-white/40">{board.subtitle}</p>
+    </div>
   );
 }
 
@@ -253,21 +234,18 @@ function DotNav({ boards, activeIndex, goTo }: { boards: typeof BOARDS; activeIn
           className="group relative flex h-8 w-8 items-center justify-center"
           aria-label={`Show ${board.name}`}
         >
-          <motion.div
-            animate={{
-              scale: i === activeIndex ? 1 : 0.6,
-              opacity: i === activeIndex ? 1 : 0.3,
+          <div
+            className="h-2 w-2 rounded-full transition-all duration-400 ease-[cubic-bezier(0.16,1,0.3,1)]"
+            style={{ 
+              backgroundColor: i === activeIndex ? board.color : "#ffffff",
+              transform: i === activeIndex ? 'scale(1)' : 'scale(0.6)',
+              opacity: i === activeIndex ? 1 : 0.3
             }}
-            transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
-            className="h-2 w-2 rounded-full"
-            style={{ backgroundColor: i === activeIndex ? board.color : "#ffffff" }}
           />
           {i === activeIndex && (
-            <motion.div
-              layoutId="dot-ring"
-              className="absolute inset-0 rounded-full border"
+            <div
+              className="absolute inset-0 rounded-full border transition-all duration-400 ease-[cubic-bezier(0.16,1,0.3,1)]"
               style={{ borderColor: `${board.color}40` }}
-              transition={{ duration: 0.4, ease: [0.16, 1, 0.3, 1] }}
             />
           )}
         </button>
@@ -280,24 +258,18 @@ function DotNav({ boards, activeIndex, goTo }: { boards: typeof BOARDS; activeIn
 function BoardFallback2D({ boards, activeIndex, goTo }: { boards: typeof BOARDS; activeIndex: number; goTo: (i: number) => void }) {
   return (
     <div className="relative h-[70vh] flex flex-col items-center justify-center px-6">
-      <AnimatePresence mode="wait">
-        <motion.div
-          key={boards[activeIndex].id}
-          initial={{ opacity: 0, scale: 0.9 }}
-          animate={{ opacity: 1, scale: 1 }}
-          exit={{ opacity: 0, scale: 0.9 }}
-          transition={{ duration: 0.5, ease: [0.16, 1, 0.3, 1] }}
-          className="relative w-full max-w-sm rounded-3xl border border-white/[0.06] bg-white/[0.02] p-8 text-center backdrop-blur-sm"
-        >
-          <div className="mx-auto mb-6 h-20 w-20 rounded-2xl" style={{ background: `linear-gradient(135deg, ${boards[activeIndex].color}20, ${boards[activeIndex].color}08)` }}>
-            <div className="flex h-full items-center justify-center text-3xl font-bold" style={{ color: boards[activeIndex].color }}>
-              {boards[activeIndex].name.charAt(0)}
-            </div>
+      <div
+        key={boards[activeIndex].id}
+        className="relative w-full max-w-sm rounded-3xl border border-white/[0.06] bg-white/[0.02] p-8 text-center backdrop-blur-sm animate-fade-up"
+      >
+        <div className="mx-auto mb-6 h-20 w-20 rounded-2xl" style={{ background: `linear-gradient(135deg, ${boards[activeIndex].color}20, ${boards[activeIndex].color}08)` }}>
+          <div className="flex h-full items-center justify-center text-3xl font-bold" style={{ color: boards[activeIndex].color }}>
+            {boards[activeIndex].name.charAt(0)}
           </div>
-          <h3 className="text-2xl font-bold text-white">{boards[activeIndex].name}</h3>
-          <p className="mt-2 text-sm text-white/40">{boards[activeIndex].subtitle}</p>
-        </motion.div>
-      </AnimatePresence>
+        </div>
+        <h3 className="text-2xl font-bold text-white">{boards[activeIndex].name}</h3>
+        <p className="mt-2 text-sm text-white/40">{boards[activeIndex].subtitle}</p>
+      </div>
       <div className="mt-6 flex gap-3">
         {boards.map((b, i) => (
           <button key={b.id} onClick={() => goTo(i)} className="h-2 w-2 rounded-full transition-all" style={{ backgroundColor: i === activeIndex ? b.color : "rgba(255,255,255,0.2)", transform: i === activeIndex ? "scale(1.5)" : "scale(1)" }} />
