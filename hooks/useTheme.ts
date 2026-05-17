@@ -1,21 +1,30 @@
-// import { create } from "zustand";
-// import { persist } from "zustand/middleware";
+"use client";
 
-// interface ThemeState {
-//   theme: "dark" | "light";
-//   toggle: () => void;
-//   setTheme: (theme: "dark" | "light") => void;
-// }
+import { useState, useEffect } from "react";
 
-// export const useTheme = create<ThemeState>()(
-//   persist(
-//     (set) => ({
-//       theme: "dark", // default theme
-//       toggle: () => set((state) => ({ theme: state.theme === "dark" ? "light" : "dark" })),
-//       setTheme: (theme) => set({ theme }),
-//     }),
-//     {
-//       name: "electrocode-theme",
-//     }
-//   )
-// );
+export function useTheme() {
+  const [theme, setTheme] = useState<"dark" | "light">("dark");
+
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+
+    // Initial check
+    const isDark = document.documentElement.classList.contains("dark");
+    setTheme(isDark ? "dark" : "light");
+
+    // Observe changes to the 'class' attribute of <html>
+    const observer = new MutationObserver(() => {
+      const currentDark = document.documentElement.classList.contains("dark");
+      setTheme(currentDark ? "dark" : "light");
+    });
+
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
+
+    return () => observer.disconnect();
+  }, []);
+
+  return theme;
+}

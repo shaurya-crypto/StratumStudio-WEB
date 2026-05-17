@@ -8,6 +8,7 @@ import PicoModel from "./PicoModel";
 import ArduinoModel from "./ArduinoModel";
 import ESP32Model from "./ESP32Model";
 import Particles from "./Particles";
+import { useTheme } from "@/hooks/useTheme";
 
 const mousePos = { x: 0, y: 0 };
 
@@ -130,11 +131,8 @@ const Scene = memo(function Scene({ isMobile }: { isMobile: boolean }) {
 
   return (
     <>
-      <ambientLight intensity={1.2} />
-      <directionalLight position={[10, 10, 5]} intensity={2.5} color="#ffffff" />
-      <directionalLight position={[-8, 5, -5]} intensity={1.8} color="#4488ff" />
-      <pointLight position={[0, 5, 3]} intensity={4} color="#22C55E" distance={15} />
-      <hemisphereLight args={["#1a4a7e", "#0a2a0a", 1.5]} />
+      <ambientLight intensity={1.5} />
+      <directionalLight position={[5, 8, 5]} intensity={3} color="#ffffff" />
 
       <group ref={groupRef}>
         <group ref={picoRef} position={[-12, 8, -25]} scale={0.1}>
@@ -164,7 +162,10 @@ if (typeof window !== "undefined") {
 
 export default function HeroCanvas() {
   const isMobile = useIsMobile();
+  const theme = useTheme();
   const [webglOk, setWebglOk] = useState(true);
+
+  const bgColor = theme === "dark" ? "#060610" : "#ffffff";
 
   useEffect(() => {
     try {
@@ -185,7 +186,7 @@ export default function HeroCanvas() {
 
   if (!webglOk) {
     return (
-      <div className="absolute inset-0 bg-gradient-to-b from-[#030306] via-[#060818] to-[#030306]">
+      <div className="absolute inset-0" style={{ background: "var(--bg)" }}>
         <div className="absolute inset-0 bg-[radial-gradient(ellipse_at_center,rgba(59,130,246,0.06),transparent_60%)]" />
       </div>
     );
@@ -206,8 +207,8 @@ export default function HeroCanvas() {
       performance={{ min: 0.1 }}
       style={{ position: "absolute", inset: 0 }}
     >
-      <color attach="background" args={["#030306"]} />
-      <fog attach="fog" args={["#030306", 10, 25]} />
+      <color attach="background" args={[bgColor]} />
+      <fog attach="fog" args={[bgColor, 10, 25]} />
       <Scene isMobile={isMobile} />
       <AdaptiveDpr pixelated />
       <AdaptiveEvents />

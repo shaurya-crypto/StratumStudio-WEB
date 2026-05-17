@@ -1,20 +1,18 @@
 "use client";
 
 import React, { Suspense, useState, useEffect } from "react";
-
-import { Zap, Code2, Gamepad2, Radio, ChevronDown, Monitor, Laptop, Smartphone, Terminal } from "lucide-react";
+import { Zap, Code2, Gamepad2, Radio, ChevronDown, Monitor, Smartphone, Laptop, Terminal } from "lucide-react";
 import dynamic from "next/dynamic";
 import Navbar from "@/components/ui/Navbar";
 import GlowCard from "@/components/ui/GlowCard";
 import DownloadButton from "@/components/ui/DownloadButton";
 import DeviceMockup from "@/components/ui/DeviceMockup";
-import BackgroundBeams from "@/components/ui/BackgroundBeams";
 import AIProviderShowcase from "@/components/ui/AIProviderShowcase";
 import { SmoothScrollProvider } from "@/hooks/useSmoothScroll";
 
 const BoardCarousel = dynamic(() => import("@/components/3d/BoardCarousel"), {
   ssr: false,
-  loading: () => <div className="h-[90vh] bg-[#030306]" />,
+  loading: () => <div className="h-[90vh]" style={{ background: "var(--bg)" }} />,
 });
 
 const HeroCanvas = dynamic(() => import("@/components/canvas/HeroCanvas"), {
@@ -68,10 +66,41 @@ function XIcon({ className }: { className?: string }) {
 export default function HomePage() {
   const heroRef = React.useRef<HTMLElement>(null);
   const [show3D, setShow3D] = useState(false);
+  const [showCarousel, setShowCarousel] = useState(false);
+  const carouselRef = React.useRef<HTMLElement>(null);
 
   useEffect(() => {
-    const timer = setTimeout(() => setShow3D(true), 200);
-    return () => clearTimeout(timer);
+    let idleCallbackId: number;
+    let fallbackTimeoutId: NodeJS.Timeout;
+
+    if ('requestIdleCallback' in window) {
+      idleCallbackId = (window as any).requestIdleCallback(() => setShow3D(true), { timeout: 2000 });
+    } else {
+      fallbackTimeoutId = setTimeout(() => setShow3D(true), 500);
+    }
+
+    return () => {
+      if ('cancelIdleCallback' in window && idleCallbackId) {
+        (window as any).cancelIdleCallback(idleCallbackId);
+      }
+      if (fallbackTimeoutId) {
+        clearTimeout(fallbackTimeoutId);
+      }
+    };
+  }, []);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      ([entry]) => {
+        if (entry.isIntersecting) {
+          setShowCarousel(true);
+          observer.disconnect();
+        }
+      },
+      { rootMargin: "200px" }
+    );
+    if (carouselRef.current) observer.observe(carouselRef.current);
+    return () => observer.disconnect();
   }, []);
 
   return (
@@ -91,41 +120,24 @@ export default function HomePage() {
       <Navbar />
 
       {/* ====== SECTION 1: HERO ====== */}
-      <section ref={heroRef} className="relative h-screen overflow-hidden premium-bg">
-        {/* 5-Layer Background */}
+      <section ref={heroRef} className="relative h-screen overflow-hidden premium-bg flex items-center justify-center">
+        {/* Background Gradients */}
         <div className="gradient-orb gradient-orb-1" />
         <div className="gradient-orb gradient-orb-2" />
 
-        <Suspense
-          fallback={
-            <div className="absolute inset-0 bg-gradient-to-b from-[#030306] via-[#060818] to-[#030306]" />
-          }
-        >
+        <Suspense fallback={<div className="absolute inset-0" style={{ background: "var(--bg)" }} />}>
           {show3D && <HeroCanvas />}
         </Suspense>
 
-        <BackgroundBeams />
+        {/* Dynamic theme-aware overlays */}
+        <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[var(--bg)]" />
+        <div className="pointer-events-none absolute inset-0" style={{ background: "radial-gradient(ellipse at center, transparent 30%, var(--bg) 80%)" }} />
 
-        {/* Gradient overlays */}
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-[#030306]/40 via-transparent to-[#030306]" />
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_center,transparent_30%,#030306_80%)]" />
-
-        <div className="relative z-10 flex h-full flex-col items-center justify-center px-6 text-center">
+        <div className="relative z-10 flex flex-col items-center justify-center px-6 text-center max-w-4xl mx-auto pt-16">
           <div className="max-w-3xl">
-            {/* Badge */}
-            {/* <motion.div
-              initial={{ opacity: 0, y: 20, scale: 0.9 }}
-              animate={{ opacity: 1, y: 0, scale: 1 }}
-              transition={{ delay: 0.3, duration: 0.6, ease: EASE }}
-              className="mb-8 inline-flex items-center gap-2 rounded-full border border-white/[0.06] bg-white/[0.02] px-4 py-1.5 backdrop-blur-sm"
-            >
-              <span className="h-1.5 w-1.5 rounded-full bg-[#22C55E] animate-pulse" />
-              <span className="text-xs font-medium text-white/40">Now in Open Beta</span>
-            </motion.div> */}
-
             {/* Title — character by character */}
             <div
-              className="font-mono text-5xl font-extrabold tracking-tight sm:text-6xl lg:text-7xl"
+              className="font-sans text-5xl font-extrabold tracking-tight sm:text-6xl lg:text-7xl"
               aria-hidden="true"
               style={{ animation: "breathe-glow 3s ease-in-out infinite" }}
             >
@@ -136,11 +148,11 @@ export default function HomePage() {
                     className="inline-block animate-fade-up"
                     style={{
                       animationDelay: `${(part.colored ? 7 : 0) * 0.04 + i * 0.04}s`,
-                      color: part.colored ? "transparent" : "#ffffff",
-                      backgroundImage: part.colored ? "linear-gradient(135deg, #3B82F6, #06B6D4)" : "none",
+                      color: part.colored ? "transparent" : "var(--text)",
+                      backgroundImage: part.colored ? "linear-gradient(135deg, var(--primary), var(--cyan))" : "none",
                       backgroundClip: part.colored ? "text" : "unset",
                       WebkitBackgroundClip: part.colored ? "text" : "unset",
-                      transition: "color 0.075s",
+                      transition: "color 0.3s ease",
                       animationFillMode: "both"
                     }}
                   >
@@ -151,7 +163,7 @@ export default function HomePage() {
             </div>
 
             {/* Subtitle — word by word */}
-            <p className="mx-auto mt-6 max-w-xl text-lg leading-relaxed text-white/40 sm:text-xl">
+            <p className="mx-auto mt-6 max-w-xl text-lg leading-relaxed sm:text-xl font-medium" style={{ color: "var(--text-muted)" }}>
               {SUBTITLE_WORDS.map((word, i) => (
                 <span 
                   key={i} 
@@ -167,18 +179,16 @@ export default function HomePage() {
             <div className="mt-10 flex flex-col items-center gap-4 sm:flex-row sm:justify-center animate-fade-up" style={{ animationDelay: "2.0s", animationFillMode: "both" }}>
               <a
                 href="#download"
-                className="group relative inline-flex items-center gap-2.5 overflow-hidden rounded-xl bg-gradient-to-r from-[#3B82F6] to-[#2563eb] px-7 py-3.5 text-sm font-bold text-white hover:-translate-y-[3px] hover:shadow-[0_20px_40px_rgba(59,130,246,0.3),inset_0_0_0_1px_rgba(59,130,246,0.3)] transition-all duration-300 active:scale-95"
+                className="btn-primary group relative overflow-hidden"
               >
-                <span className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/15 to-transparent transition-transform duration-700 group-hover:translate-x-full" />
                 <Monitor className="h-4 w-4" />
                 Download for PC
               </a>
 
               <a
                 href="#download"
-                className="group relative inline-flex items-center gap-2.5 overflow-hidden rounded-xl border border-white/[0.06] bg-white/[0.02] px-7 py-3.5 text-sm font-bold text-white backdrop-blur-sm transition-all duration-300 hover:border-[#06B6D4]/20 hover:bg-white/[0.04] hover:-translate-y-[3px] hover:shadow-[0_20px_40px_rgba(6,182,212,0.15),inset_0_0_0_1px_rgba(6,182,212,0.2)] active:scale-95"
+                className="btn-secondary group relative overflow-hidden"
               >
-                <span className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/[0.05] to-transparent transition-transform duration-700 group-hover:translate-x-full" />
                 <Smartphone className="h-4 w-4" />
                 Get Mobile App
               </a>
@@ -191,27 +201,32 @@ export default function HomePage() {
             style={{ animationDelay: "2.5s", animationFillMode: "both" }}
           >
             <div className="animate-bounce">
-              <ChevronDown className="h-6 w-6 text-white/20" />
+              <ChevronDown className="h-6 w-6" style={{ color: "var(--text-subtle)" }} />
             </div>
           </div>
         </div>
       </section>
 
       {/* ====== CINEMATIC BOARD CAROUSEL ====== */}
-      <section className="relative premium-bg">
+      <section className="relative premium-bg" ref={carouselRef}>
         <div className="mx-auto max-w-5xl px-6 pt-24 pb-8 text-center">
           <div className="animate-fade-up">
             <span
-              className="mb-4 inline-block rounded-full border border-[#3B82F6]/20 bg-[#3B82F6]/5 px-4 py-1.5 text-xs font-medium tracking-widest text-[#3B82F6] uppercase"
+              className="mb-4 inline-block rounded-full border px-4 py-1.5 text-xs font-semibold tracking-widest uppercase"
+              style={{ borderColor: "var(--border-strong)", background: "var(--bg-secondary)", color: "var(--primary)" }}
             >
               Hardware
             </span>
-            <h2 className="mt-4 text-3xl font-bold tracking-tight text-white sm:text-4xl">Supported <span className="bg-gradient-to-r from-[#3B82F6] to-[#06B6D4] bg-clip-text text-transparent">Boards</span></h2>
-            <p className="mx-auto mt-4 max-w-lg text-white/35">Four boards. One IDE. Explore the hardware that Stratum Studio supports out of the box.</p>
+            <h2 className="mt-4 text-3xl font-bold tracking-tight sm:text-4xl" style={{ color: "var(--text)" }}>
+              Supported <span className="bg-gradient-to-r from-blue-500 to-green-500 bg-clip-text text-transparent">Boards</span>
+            </h2>
+            <p className="mx-auto mt-4 max-w-lg" style={{ color: "var(--text-muted)" }}>
+              Four boards. One IDE. Explore the hardware that Stratum Studio supports out of the box.
+            </p>
           </div>
         </div>
-        <Suspense fallback={<div className="h-[90vh] bg-[#030306]" />}>
-          {show3D && <BoardCarousel />}
+        <Suspense fallback={<div className="h-[90vh]" style={{ background: "var(--bg)" }} />}>
+          {showCarousel && <BoardCarousel />}
         </Suspense>
       </section>
 
@@ -230,15 +245,15 @@ export default function HomePage() {
             className="mb-16 text-center animate-fade-up"
           >
             <span
-              className="mb-4 inline-block rounded-full border border-[#22C55E]/20 bg-[#22C55E]/5 px-4 py-1.5 text-xs font-medium tracking-widest text-[#22C55E] uppercase"
+              className="mb-4 inline-block rounded-full border px-4 py-1.5 text-xs font-semibold tracking-widest uppercase"
+              style={{ borderColor: "var(--border-strong)", background: "var(--bg-secondary)", color: "var(--accent)" }}
             >
               Features
             </span>
-            <h2 className="mt-4 text-3xl font-bold tracking-tight text-white sm:text-4xl">
-              Features: Built for{" "}
-              <span className="bg-gradient-to-r from-[#3B82F6] to-[#8B5CF6] bg-clip-text text-transparent">hardware engineers</span>
+            <h2 className="mt-4 text-3xl font-bold tracking-tight sm:text-4xl" style={{ color: "var(--text)" }}>
+              Built for <span className="bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 bg-clip-text text-transparent">hardware engineers</span>
             </h2>
-            <p className="mx-auto mt-4 max-w-lg text-white/35">
+            <p className="mx-auto mt-4 max-w-lg" style={{ color: "var(--text-muted)" }}>
               Everything you need to write, deploy, and debug firmware — in one interface.
             </p>
           </div>
@@ -253,16 +268,15 @@ export default function HomePage() {
 
       {/* ====== SECTION 3: DEVICE SHOWCASE ====== */}
       <section id="showcase" className="relative overflow-hidden py-32 premium-bg">
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(ellipse_at_bottom,rgba(6,182,212,0.03),transparent_60%)]" />
+        <div className="pointer-events-none absolute inset-0" style={{ background: "radial-gradient(ellipse at bottom, var(--shadow-color) 10%, transparent 60%)" }} />
         <div className="mx-auto max-w-6xl px-6 relative z-10">
           <div
             className="mb-16 text-center animate-fade-up"
           >
-            <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
-              One IDE.{" "}
-              <span className="bg-gradient-to-r from-[#22C55E] to-[#06B6D4] bg-clip-text text-transparent">Every device.</span>
+            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl" style={{ color: "var(--text)" }}>
+              One IDE. <span className="bg-gradient-to-r from-green-500 to-blue-500 bg-clip-text text-transparent">Every device.</span>
             </h2>
-            <p className="mx-auto mt-4 max-w-lg text-white/35">
+            <p className="mx-auto mt-4 max-w-lg" style={{ color: "var(--text-muted)" }}>
               Seamless experience across desktop and mobile. Code anywhere, deploy everywhere.
             </p>
           </div>
@@ -278,10 +292,10 @@ export default function HomePage() {
           <div
             className="animate-fade-up"
           >
-            <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl lg:text-5xl">
-              Download Now. <span className="text-white/30">No account needed.</span>
+            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl" style={{ color: "var(--text)" }}>
+              Download Now. <span style={{ color: "var(--text-muted)" }}>No account needed.</span>
             </h2>
-            <p className="mx-auto mt-4 max-w-md text-white/35">
+            <p className="mx-auto mt-4 max-w-md" style={{ color: "var(--text-muted)" }}>
               Download Stratum Studio and start coding for your hardware in under 60 seconds.
             </p>
           </div>
@@ -294,8 +308,8 @@ export default function HomePage() {
           </div>
 
           <p
-            className="mt-10 text-sm tracking-wide text-white/20 animate-fade-up"
-            style={{ animationDelay: "0.3s", animationFillMode: "both" }}
+            className="mt-10 text-sm tracking-wide font-medium animate-fade-up"
+            style={{ animationDelay: "0.3s", animationFillMode: "both", color: "var(--text-subtle)" }}
           >
             Open Source &middot; Free Forever &middot; Built for Engineers
           </p>
@@ -303,25 +317,25 @@ export default function HomePage() {
       </section>
 
       {/* ====== SECTION 5: FOOTER ====== */}
-      <footer className="border-t border-white/[0.03] py-10 premium-bg">
+      <footer className="py-10 premium-bg" style={{ borderTop: "1px solid var(--border)" }}>
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-6 px-6 sm:flex-row">
           <a href="#" className="flex items-center gap-2">
-            <div className="flex h-7 w-7 items-center justify-center rounded-md bg-gradient-to-br from-[#3B82F6] via-[#8B5CF6] to-[#06B6D4]">
-              <Zap className="h-3.5 w-3.5 text-white" />
+            <div className="flex h-8 w-8 items-center justify-center rounded-xl" style={{ background: "linear-gradient(135deg, #4285f4, #ea4335, #fbbc04, #34a853)" }}>
+              <Zap className="h-4 w-4 text-white" />
             </div>
-            <span className="font-mono text-sm font-bold text-white/70">
-              Stratum<span className="bg-gradient-to-r from-[#3B82F6] to-[#06B6D4] bg-clip-text text-transparent">Studio</span>
+            <span className="font-sans text-sm font-bold" style={{ color: "var(--text)" }}>
+              Stratum<span style={{ color: "var(--primary)" }}>Studio</span>
             </span>
           </a>
 
-          <p className="text-sm text-white/20">Made with care for the hardware community.</p>
+          <p className="text-sm font-medium" style={{ color: "var(--text-muted)" }}>Made with care for the hardware community.</p>
 
           <div className="flex items-center gap-4">
-            <a href="https://github.com/shaurya-crypto" target="_blank" rel="noopener noreferrer" className="flex h-9 w-9 items-center justify-center rounded-lg text-white/20 transition-colors hover:bg-white/[0.03] hover:text-white/50" aria-label="GitHub">
-              <GithubIcon className="h-4 w-4" />
+            <a href="https://github.com/shaurya-crypto" target="_blank" rel="noopener noreferrer" className="flex h-9 w-9 items-center justify-center rounded-lg transition-all hover:scale-105 active:scale-95" style={{ color: "var(--text-muted)" }} aria-label="GitHub">
+              <GithubIcon className="h-5 w-5" />
             </a>
-            <a href="https://x.com/stratumstudio" target="_blank" rel="noopener noreferrer" className="flex h-9 w-9 items-center justify-center rounded-lg text-white/20 transition-colors hover:bg-white/[0.03] hover:text-white/50" aria-label="X">
-              <XIcon className="h-4 w-4" />
+            <a href="https://x.com/stratumstudio" target="_blank" rel="noopener noreferrer" className="flex h-9 w-9 items-center justify-center rounded-lg transition-all hover:scale-105 active:scale-95" style={{ color: "var(--text-muted)" }} aria-label="X">
+              <XIcon className="h-5 w-5" />
             </a>
           </div>
         </div>

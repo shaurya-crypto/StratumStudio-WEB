@@ -8,7 +8,7 @@ const PIN_GEO = new THREE.CylinderGeometry(0.012, 0.012, 0.14, 6);
 const LED_GEO = new THREE.SphereGeometry(0.02, 8, 8);
 
 const STM32Board3D = memo(function STM32Board3D() {
-  const tex = useTexture("/boards/stm32.png");
+  const tex = useTexture("/boards/stm32.webp");
   tex.flipY = false;
 
   const pinMat = useMemo(() => new THREE.MeshStandardMaterial({ color: "#C0A040", metalness: 0.85, roughness: 0.2 }), []);

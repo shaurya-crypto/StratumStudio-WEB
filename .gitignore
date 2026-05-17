@@ -52,7 +52,7 @@ Desktop.ini
 ehthumbs.db
 
 # Skill tool (not part of website)
-/ui-ux-pro-max-skill
+./ui-ux-pro-max-skill/
 
 # Gemini agent data
 .gemini/

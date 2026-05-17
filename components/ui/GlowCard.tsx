@@ -19,11 +19,11 @@ const GlowCard = memo(function GlowCard({ icon: Icon, title, description, index,
   const handleMouseMove = (e: React.MouseEvent) => {
     if (!cardRef.current) return;
     const rect = cardRef.current.getBoundingClientRect();
-    setMousePos({
-      x: e.clientX - rect.left,
-      y: e.clientY - rect.top,
-    });
+    setMousePos({ x: e.clientX - rect.left, y: e.clientY - rect.top });
   };
+
+  const colors = ["#4285f4", "#ea4335", "#34a853"];
+  const accentColor = colors[index % 3];
 
   return (
     <div
@@ -31,12 +31,15 @@ const GlowCard = memo(function GlowCard({ icon: Icon, title, description, index,
       onMouseMove={handleMouseMove}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      className={`group relative overflow-hidden rounded-2xl border border-white/[0.04] bg-white/[0.01] p-8 transition-all duration-500 hover:scale-105 animate-fade-up ${className}`}
+      className={`group relative overflow-hidden rounded-3xl p-8 transition-all duration-300 hover:scale-[1.02] animate-fade-up ${className}`}
       style={{
+        background: "var(--bg-elevated)",
+        border: "1px solid var(--border)",
+        boxShadow: isHovered ? "var(--shadow-hover)" : "var(--shadow)",
         transform: isHovered
-          ? `perspective(800px) rotateX(${(mousePos.y - 100) * -0.02}deg) rotateY(${(mousePos.x - 150) * 0.02}deg)`
-          : "perspective(800px) rotateX(0deg) rotateY(0deg)",
-        transition: "transform 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
+          ? `perspective(800px) rotateX(${(mousePos.y - 100) * -0.01}deg) rotateY(${(mousePos.x - 150) * 0.01}deg) scale(1.02)`
+          : "perspective(800px) rotateX(0deg) rotateY(0deg) scale(1)",
+        transition: "all 0.3s cubic-bezier(0.16, 1, 0.3, 1)",
       }}
     >
       {/* Mouse-following gradient glow */}
@@ -44,27 +47,25 @@ const GlowCard = memo(function GlowCard({ icon: Icon, title, description, index,
         className="pointer-events-none absolute -inset-px opacity-0 transition-opacity duration-500 group-hover:opacity-100"
         style={{
           background: isHovered
-            ? `radial-gradient(400px circle at ${mousePos.x}px ${mousePos.y}px, rgba(59,130,246,0.08), transparent 50%)`
+            ? `radial-gradient(400px circle at ${mousePos.x}px ${mousePos.y}px, ${accentColor}12, transparent 50%)`
             : "none",
         }}
       />
 
-      {/* Top border glow */}
-      <div className="pointer-events-none absolute inset-x-0 top-0 h-px bg-gradient-to-r from-transparent via-[#3B82F6]/20 to-transparent opacity-0 transition-opacity duration-500 group-hover:opacity-100" />
-
       {/* Content */}
       <div className="relative z-10">
         <div
-          className="mb-6 inline-flex rounded-xl bg-gradient-to-br from-[#3B82F6]/10 to-[#8B5CF6]/10 p-3.5 text-[#3B82F6] ring-1 ring-[#3B82F6]/15 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-6"
+          className="mb-6 inline-flex rounded-2xl p-3.5 transition-transform duration-300 group-hover:scale-110 group-hover:rotate-6"
+          style={{
+            background: `${accentColor}10`,
+            color: accentColor,
+          }}
         >
           <Icon className="h-6 w-6" />
         </div>
-        <h3 className="mb-3 text-xl font-bold tracking-tight text-white">{title}</h3>
-        <p className="text-[15px] leading-relaxed text-white/40">{description}</p>
+        <h3 className="mb-3 text-xl font-bold tracking-tight" style={{ color: "var(--text)" }}>{title}</h3>
+        <p className="text-[15px] leading-relaxed" style={{ color: "var(--text-muted)" }}>{description}</p>
       </div>
-
-      {/* Bottom ambient glow */}
-      <div className="pointer-events-none absolute -bottom-20 -right-20 h-40 w-40 rounded-full bg-[#3B82F6]/[0.02] blur-3xl transition-all duration-700 group-hover:bg-[#3B82F6]/[0.06]" />
     </div>
   );
 });

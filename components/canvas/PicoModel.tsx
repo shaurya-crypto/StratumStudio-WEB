@@ -8,7 +8,7 @@ import * as THREE from "three";
 const BW = 2.1, BH = 1.05, BD = 0.08, PINS = 20;
 
 function PicoTexture() {
-  const tex = useTexture("/pico-top.png");
+  const tex = useTexture("/pico-top.webp");
   const mats = [
     new THREE.MeshStandardMaterial({ color: "#2d5a1b", emissive: "#1a3a0f", emissiveIntensity: 0.8, roughness: 0.4 }),
     new THREE.MeshStandardMaterial({ color: "#2d5a1b", emissive: "#1a3a0f", emissiveIntensity: 0.8, roughness: 0.4 }),
@@ -52,23 +52,17 @@ export default function PicoModel(props: ThreeElements["group"]) {
         <PicoTexture />
       </Suspense>
 
-      {/* Board labels */}
-      <Text position={[0, BD / 2 + 0.005, -0.15]} rotation={[-Math.PI / 2, 0, 0]} fontSize={0.1} color="#88cc66" anchorX="center" anchorY="middle">PICO W</Text>
-      <Text position={[0, BD / 2 + 0.005, 0.15]} rotation={[-Math.PI / 2, 0, 0]} fontSize={0.055} color="#66aa44" anchorX="center" anchorY="middle">RP2040</Text>
 
-      {/* Gold pins — two rows */}
-      {Array.from({ length: PINS }).map((_, i) => (
-        <mesh key={`t${i}`} position={[-0.95 + i * 0.1, -BD / 2 - 0.04, BH / 2 - 0.04]}>
-          <cylinderGeometry args={[0.012, 0.012, 0.12, 6]} />
-          <meshStandardMaterial color="#FFD700" emissive="#BB9900" emissiveIntensity={0.8} metalness={0.9} roughness={0.1} />
-        </mesh>
-      ))}
-      {Array.from({ length: PINS }).map((_, i) => (
-        <mesh key={`b${i}`} position={[-0.95 + i * 0.1, -BD / 2 - 0.04, -(BH / 2 - 0.04)]}>
-          <cylinderGeometry args={[0.012, 0.012, 0.12, 6]} />
-          <meshStandardMaterial color="#FFD700" emissive="#BB9900" emissiveIntensity={0.8} metalness={0.9} roughness={0.1} />
-        </mesh>
-      ))}
+
+      {/* Gold pins — two rows (Optimized) */}
+      <mesh position={[0, -BD / 2 - 0.04, BH / 2 - 0.04]}>
+        <boxGeometry args={[1.9, 0.12, 0.04]} />
+        <meshStandardMaterial color="#FFD700" emissive="#BB9900" emissiveIntensity={0.8} metalness={0.9} roughness={0.1} />
+      </mesh>
+      <mesh position={[0, -BD / 2 - 0.04, -(BH / 2 - 0.04)]}>
+        <boxGeometry args={[1.9, 0.12, 0.04]} />
+        <meshStandardMaterial color="#FFD700" emissive="#BB9900" emissiveIntensity={0.8} metalness={0.9} roughness={0.1} />
+      </mesh>
 
       {/* USB-C */}
       <mesh position={[BW / 2 + 0.05, 0.02, 0]}>

@@ -9,7 +9,7 @@ const LED_GEO = new THREE.SphereGeometry(0.025, 8, 8);
 const CAP_GEO = new THREE.CylinderGeometry(0.04, 0.04, 0.08, 8);
 
 const ArduinoBoard3D = memo(function ArduinoBoard3D() {
-  const tex = useTexture("/boards/arduino.png");
+  const tex = useTexture("/boards/arduino.webp");
   tex.flipY = false;
 
   const pcbMat = useMemo(() => new THREE.MeshStandardMaterial({ color: "#0066CC", roughness: 0.4, metalness: 0.1 }), []);

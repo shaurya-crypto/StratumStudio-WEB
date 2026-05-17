@@ -8,7 +8,7 @@ import * as THREE from "three";
 const BW = 2.7, BH = 2.1, BD = 0.08;
 
 function ArduinoTexture() {
-  const tex = useTexture("/arduino-top.png");
+  const tex = useTexture("/arduino-top.webp");
   const mats = [
     new THREE.MeshStandardMaterial({ color: "#0066CC", emissive: "#0044AA", emissiveIntensity: 1.0, roughness: 0.35 }),
     new THREE.MeshStandardMaterial({ color: "#0066CC", emissive: "#0044AA", emissiveIntensity: 1.0, roughness: 0.35 }),
@@ -43,8 +43,7 @@ export default function ArduinoModel(props: ThreeElements["group"]) {
         <ArduinoTexture />
       </Suspense>
 
-      <Text position={[0, BD / 2 + 0.005, 0.3]} rotation={[-Math.PI / 2, 0, 0]} fontSize={0.13} color="#88bbff" anchorX="center" anchorY="middle">ARDUINO UNO</Text>
-      <Text position={[0.3, BD / 2 + 0.005, -0.15]} rotation={[-Math.PI / 2, 0, 0]} fontSize={0.06} color="#6699dd" anchorX="center" anchorY="middle">ATmega328P</Text>
+
 
       {/* ATmega chip — CRITICAL: high emissive + orange glow */}
       <mesh ref={chip} position={[0.3, BD / 2 + 0.025, -0.1]}>
@@ -76,19 +75,15 @@ export default function ArduinoModel(props: ThreeElements["group"]) {
         <meshStandardMaterial color="#cc0000" emissive="#cc0000" emissiveIntensity={0.6} />
       </mesh>
 
-      {/* Pin headers */}
-      {Array.from({ length: 14 }).map((_, i) => (
-        <mesh key={`t${i}`} position={[BW / 2 - 0.15 - i * 0.1, BD / 2 + 0.06, BH / 2 - 0.08]}>
-          <boxGeometry args={[0.025, 0.12, 0.025]} />
-          <meshStandardMaterial color="#333" emissive="#444" emissiveIntensity={0.4} />
-        </mesh>
-      ))}
-      {Array.from({ length: 10 }).map((_, i) => (
-        <mesh key={`b${i}`} position={[BW / 2 - 0.3 - i * 0.1, BD / 2 + 0.06, -(BH / 2 - 0.08)]}>
-          <boxGeometry args={[0.025, 0.12, 0.025]} />
-          <meshStandardMaterial color="#333" emissive="#444" emissiveIntensity={0.4} />
-        </mesh>
-      ))}
+      {/* Pin headers (Optimized) */}
+      <mesh position={[BW / 2 - 0.8, BD / 2 + 0.06, BH / 2 - 0.08]}>
+        <boxGeometry args={[1.4, 0.12, 0.05]} />
+        <meshStandardMaterial color="#333" emissive="#444" emissiveIntensity={0.4} />
+      </mesh>
+      <mesh position={[BW / 2 - 0.75, BD / 2 + 0.06, -(BH / 2 - 0.08)]}>
+        <boxGeometry args={[1.0, 0.12, 0.05]} />
+        <meshStandardMaterial color="#333" emissive="#444" emissiveIntensity={0.4} />
+      </mesh>
 
       {/* Power LED */}
       <mesh position={[-0.6, BD / 2 + 0.012, 0.4]}>

@@ -19,24 +19,29 @@ function CodeEditorMockup({ mobile = false }: { mobile?: boolean }) {
   ];
 
   return (
-    <div className={`overflow-hidden rounded-xl border border-white/[0.06] bg-[#0a0b14] shadow-2xl ${mobile ? "w-[240px]" : "w-full max-w-[540px]"}`}>
+    <div className={`overflow-hidden rounded-2xl ${mobile ? "w-[240px]" : "w-full max-w-[540px]"}`}
+      style={{
+        background: "var(--bg-elevated)",
+        border: "1px solid var(--border)",
+        boxShadow: "var(--shadow-float)",
+      }}>
       {/* Title bar */}
-      <div className="flex items-center gap-2 border-b border-white/[0.04] px-4 py-2.5">
+      <div className="flex items-center gap-2 px-4 py-2.5" style={{ borderBottom: "1px solid var(--border)" }}>
         <div className="flex gap-1.5">
-          <div className="h-2.5 w-2.5 rounded-full bg-[#ef4444]/80" />
-          <div className="h-2.5 w-2.5 rounded-full bg-[#f59e0b]/80" />
-          <div className="h-2.5 w-2.5 rounded-full bg-[#22C55E]/80" />
+          <div className="h-2.5 w-2.5 rounded-full dot-red" />
+          <div className="h-2.5 w-2.5 rounded-full dot-yellow" />
+          <div className="h-2.5 w-2.5 rounded-full dot-green" />
         </div>
-        <span className="ml-3 font-mono text-[10px] text-white/30">main.py — Stratum Studio</span>
+        <span className="ml-3 font-mono text-[10px]" style={{ color: "var(--text-muted)" }}>main.py — Stratum Studio</span>
       </div>
 
       {/* Tab bar */}
-      <div className="flex border-b border-white/[0.04]">
-        <div className="border-b-2 border-[#3B82F6] bg-white/[0.02] px-4 py-1.5">
-          <span className="font-mono text-[10px] text-white/70">main.py</span>
+      <div className="flex" style={{ borderBottom: "1px solid var(--border)" }}>
+        <div className="px-4 py-1.5" style={{ borderBottom: "2px solid var(--primary)", background: "var(--bg-secondary)" }}>
+          <span className="font-mono text-[10px]" style={{ color: "var(--text)" }}>main.py</span>
         </div>
         <div className="px-4 py-1.5">
-          <span className="font-mono text-[10px] text-white/25">boot.py</span>
+          <span className="font-mono text-[10px]" style={{ color: "var(--text-subtle)" }}>boot.py</span>
         </div>
       </div>
 
@@ -44,36 +49,33 @@ function CodeEditorMockup({ mobile = false }: { mobile?: boolean }) {
       <div className={`${mobile ? "p-3" : "p-4"} font-mono text-[11px] leading-[1.7]`}>
         {lines.map((line, i) => (
           <div key={i} className="flex">
-            <span className="mr-4 inline-block w-5 text-right text-white/15 select-none">
-              {i + 1}
-            </span>
+            <span className="mr-4 inline-block w-5 text-right select-none" style={{ color: "var(--text-subtle)" }}>{i + 1}</span>
             <span style={{ paddingLeft: line.indent * 16 }}>
-              {line.comment && <span className="text-white/25">{line.comment}</span>}
-              {line.keyword && <span className="text-[#c084fc]">{line.keyword}</span>}
-              {line.text && <span className="text-white/70">{line.text}</span>}
-              {line.keyword2 && <span className="text-[#c084fc]">{line.keyword2}</span>}
-              {line.text2 && <span className="text-white/70">{line.text2}</span>}
-              {line.number && <span className="text-[#22C55E]">{line.number}</span>}
-              {line.number2 && <span className="text-[#22C55E]">{line.number2}</span>}
-              {line.text3 && <span className="text-white/70">{line.text3}</span>}
-              {line.number3 && <span className="text-[#22C55E]">{line.number3}</span>}
+              {line.comment && <span style={{ color: "var(--text-subtle)" }}>{line.comment}</span>}
+              {line.keyword && <span style={{ color: "#a78bfa" }}>{line.keyword}</span>}
+              {line.text && <span style={{ color: "var(--text)" }}>{line.text}</span>}
+              {line.keyword2 && <span style={{ color: "#a78bfa" }}>{line.keyword2}</span>}
+              {line.text2 && <span style={{ color: "var(--text)" }}>{line.text2}</span>}
+              {line.number && <span style={{ color: "#34a853" }}>{line.number}</span>}
+              {line.number2 && <span style={{ color: "#34a853" }}>{line.number2}</span>}
+              {line.text3 && <span style={{ color: "var(--text)" }}>{line.text3}</span>}
+              {line.number3 && <span style={{ color: "#34a853" }}>{line.number3}</span>}
             </span>
           </div>
         ))}
-        {/* Cursor blink */}
         <div className="flex">
-          <span className="mr-4 inline-block w-5 text-right text-white/15 select-none">13</span>
-          <span className="inline-block h-[14px] w-[1.5px] animate-pulse bg-[#3B82F6]" />
+          <span className="mr-4 inline-block w-5 text-right select-none" style={{ color: "var(--text-subtle)" }}>13</span>
+          <span className="inline-block h-[14px] w-[1.5px] animate-pulse" style={{ background: "var(--primary)" }} />
         </div>
       </div>
 
       {/* Status bar */}
-      <div className="flex items-center justify-between border-t border-white/[0.04] px-4 py-1.5">
+      <div className="flex items-center justify-between px-4 py-1.5" style={{ borderTop: "1px solid var(--border)" }}>
         <div className="flex items-center gap-3">
-          <span className="inline-block h-2 w-2 rounded-full bg-[#22C55E]" />
-          <span className="font-mono text-[9px] text-white/30">Pico W Connected</span>
+          <span className="inline-block h-2 w-2 rounded-full dot-green" />
+          <span className="font-mono text-[9px]" style={{ color: "var(--text-muted)" }}>Pico W Connected</span>
         </div>
-        <span className="font-mono text-[9px] text-white/20">MicroPython v1.24</span>
+        <span className="font-mono text-[9px]" style={{ color: "var(--text-subtle)" }}>MicroPython v1.24</span>
       </div>
     </div>
   );
@@ -81,14 +83,16 @@ function CodeEditorMockup({ mobile = false }: { mobile?: boolean }) {
 
 const PhoneMockup = memo(function PhoneMockup() {
   return (
-    <div className="w-[200px] rounded-[28px] border-2 border-white/[0.08] bg-[#050508] p-2 shadow-2xl">
-      {/* Notch */}
-      <div className="mx-auto mb-2 h-5 w-20 rounded-b-xl bg-black" />
+    <div className="w-[200px] rounded-[28px] p-2" style={{
+      background: "var(--bg-elevated)",
+      border: "2px solid var(--border-strong)",
+      boxShadow: "var(--shadow-float)",
+    }}>
+      <div className="mx-auto mb-2 h-5 w-20 rounded-b-xl" style={{ background: "var(--bg)" }} />
       <div className="overflow-hidden rounded-[20px]">
         <CodeEditorMockup mobile />
       </div>
-      {/* Home indicator */}
-      <div className="mx-auto mt-2 h-1 w-16 rounded-full bg-white/20" />
+      <div className="mx-auto mt-2 h-1 w-16 rounded-full" style={{ background: "var(--border-strong)" }} />
     </div>
   );
 });
@@ -96,13 +100,15 @@ const PhoneMockup = memo(function PhoneMockup() {
 const LaptopMockup = memo(function LaptopMockup() {
   return (
     <div className="w-full max-w-[600px]">
-      {/* Screen */}
-      <div className="rounded-t-xl border border-white/[0.08] border-b-0 bg-[#111] p-3 pb-0">
+      <div className="rounded-t-xl p-3 pb-0" style={{
+        background: "var(--bg-secondary)",
+        border: "1px solid var(--border)",
+        borderBottom: "none",
+      }}>
         <CodeEditorMockup />
       </div>
-      {/* Base */}
-      <div className="mx-auto h-3 w-full rounded-b-lg bg-gradient-to-b from-white/[0.08] to-white/[0.03]" />
-      <div className="mx-auto h-1 w-[60%] rounded-b-lg bg-white/[0.04]" />
+      <div className="mx-auto h-3 w-full rounded-b-lg" style={{ background: "var(--border-strong)" }} />
+      <div className="mx-auto h-1 w-[60%] rounded-b-lg" style={{ background: "var(--border)" }} />
     </div>
   );
 });
@@ -115,30 +121,19 @@ export default function DeviceMockup() {
   useEffect(() => {
     const handleScroll = () => {
       if (!ref.current || !laptopRef.current || !phoneRef.current) return;
-      
       const rect = ref.current.getBoundingClientRect();
       const viewportHeight = window.innerHeight;
-      
-      // Calculate progress (0 when top of element hits bottom of viewport, 1 when bottom hits top)
       const progress = 1 - Math.max(0, Math.min(1, (rect.bottom) / (viewportHeight + rect.height)));
-      
-      // Laptop moves from left (-120 to 0)
       const laptopX = Math.min(0, -120 + (progress * 240));
-      // Phone moves from right (120 to 0)
       const phoneX = Math.max(0, 120 - (progress * 240));
-      
-      // Opacity fades in
       const opacity = Math.min(1, progress * 3);
-
       laptopRef.current.style.transform = `translateX(${laptopX}px)`;
       laptopRef.current.style.opacity = opacity.toString();
-      
       phoneRef.current.style.transform = `translateX(${phoneX}px)`;
       phoneRef.current.style.opacity = opacity.toString();
     };
-
     window.addEventListener("scroll", handleScroll, { passive: true });
-    handleScroll(); // Initial check
+    handleScroll();
     return () => window.removeEventListener("scroll", handleScroll);
   }, []);
 

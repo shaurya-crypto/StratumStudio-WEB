@@ -26,7 +26,7 @@ function WifiRing({ delay, active }: { delay: number; active: boolean }) {
 }
 
 function ESP32Texture() {
-  const tex = useTexture("/esp32-top.png");
+  const tex = useTexture("/esp32-top.webp");
   const mats = [
     new THREE.MeshStandardMaterial({ color: "#1a1a3e", emissive: "#0a0a2e", emissiveIntensity: 1.0, roughness: 0.4 }),
     new THREE.MeshStandardMaterial({ color: "#1a1a3e", emissive: "#0a0a2e", emissiveIntensity: 1.0, roughness: 0.4 }),
@@ -57,8 +57,7 @@ export default function ESP32Model(props: ThreeElements["group"]) {
         <ESP32Texture />
       </Suspense>
 
-      <Text position={[0, BD / 2 + 0.005, 0.1]} rotation={[-Math.PI / 2, 0, 0]} fontSize={0.08} color="#7799cc" anchorX="center" anchorY="middle">ESP32</Text>
-      <Text position={[0, BD / 2 + 0.005, -0.15]} rotation={[-Math.PI / 2, 0, 0]} fontSize={0.04} color="#5577aa" anchorX="center" anchorY="middle">DevKitC</Text>
+
 
       {/* Silver edge frame */}
       {[[0, BH / 2, BW, 0.015], [0, -BH / 2, BW, 0.015], [BW / 2, 0, 0.015, BH], [-BW / 2, 0, 0.015, BH]].map((e, i) => (
@@ -91,19 +90,15 @@ export default function ESP32Model(props: ThreeElements["group"]) {
         <meshStandardMaterial color="#999" emissive="#666" emissiveIntensity={0.5} metalness={0.95} roughness={0.1} />
       </mesh>
 
-      {/* Pins */}
-      {Array.from({ length: 15 }).map((_, i) => (
-        <mesh key={`l${i}`} position={[-BW / 2 + 0.12 + i * 0.09, -BD / 2 - 0.04, BH / 2 - 0.03]}>
-          <cylinderGeometry args={[0.01, 0.01, 0.08, 6]} />
-          <meshStandardMaterial color="#FFD700" emissive="#BB9900" emissiveIntensity={0.8} metalness={0.9} roughness={0.2} />
-        </mesh>
-      ))}
-      {Array.from({ length: 15 }).map((_, i) => (
-        <mesh key={`r${i}`} position={[-BW / 2 + 0.12 + i * 0.09, -BD / 2 - 0.04, -(BH / 2 - 0.03)]}>
-          <cylinderGeometry args={[0.01, 0.01, 0.08, 6]} />
-          <meshStandardMaterial color="#FFD700" emissive="#BB9900" emissiveIntensity={0.8} metalness={0.9} roughness={0.2} />
-        </mesh>
-      ))}
+      {/* Pins (Optimized) */}
+      <mesh position={[0.05, -BD / 2 - 0.04, BH / 2 - 0.03]}>
+        <boxGeometry args={[1.35, 0.08, 0.03]} />
+        <meshStandardMaterial color="#FFD700" emissive="#BB9900" emissiveIntensity={0.8} metalness={0.9} roughness={0.2} />
+      </mesh>
+      <mesh position={[0.05, -BD / 2 - 0.04, -(BH / 2 - 0.03)]}>
+        <boxGeometry args={[1.35, 0.08, 0.03]} />
+        <meshStandardMaterial color="#FFD700" emissive="#BB9900" emissiveIntensity={0.8} metalness={0.9} roughness={0.2} />
+      </mesh>
 
       {/* Buttons */}
       <mesh position={[-0.45, BD / 2 + 0.015, 0.2]}><cylinderGeometry args={[0.03, 0.03, 0.02, 8]} /><meshStandardMaterial color="#555" emissive="#666" emissiveIntensity={0.4} /></mesh>

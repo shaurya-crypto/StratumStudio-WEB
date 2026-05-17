@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
+import ThemeToggle from "@/components/ui/ThemeToggle";
 
 const inter = Inter({
   variable: "--font-sans",
@@ -60,7 +61,10 @@ export const metadata: Metadata = {
 };
 
 export const viewport: Viewport = {
-  themeColor: "#030306",
+  themeColor: [
+    { media: "(prefers-color-scheme: light)", color: "#ffffff" },
+    { media: "(prefers-color-scheme: dark)", color: "#060610" },
+  ],
   width: "device-width",
   initialScale: 1,
 };
@@ -76,7 +80,17 @@ export default function RootLayout({
       className={`${inter.variable} ${jetbrainsMono.variable} dark`}
       suppressHydrationWarning
     >
-      <body className="min-h-screen bg-background text-foreground antialiased font-sans">
+      <head>
+        {/* Prevent flash of wrong theme */}
+        <script dangerouslySetInnerHTML={{ __html: `
+          try {
+            const t = localStorage.getItem('theme');
+            if (t === 'light') document.documentElement.classList.remove('dark');
+          } catch(e) {}
+        ` }} />
+      </head>
+      <body className="min-h-screen antialiased font-sans" style={{ background: "var(--bg)", color: "var(--text)" }}>
+        <ThemeToggle />
         {children}
       </body>
     </html>
