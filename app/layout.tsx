@@ -1,7 +1,6 @@
 import type { Metadata, Viewport } from "next";
 import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
-import ThemeToggle from "@/components/ui/ThemeToggle";
 
 const inter = Inter({
   variable: "--font-sans",
@@ -17,9 +16,20 @@ const jetbrainsMono = JetBrains_Mono({
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://stratum-studio.vercel.app"),
-  title: "Stratum Studio - AI-Powered Mobile IDE for Arduino, ESP32, Pico",
+  title: "Stratum Studio - AI-Powered Desktop/Mobile IDE for Arduino, ESP32, Pico and STM32",
   description:
-    "Download Stratum Studio: Free mobile-friendly IDE with built-in AI agent for MicroPython, Arduino, ESP32, and Raspberry Pi Pico development. Code anywhere.",
+    "Download Stratum Studio: Free mobile-friendly IDE with built-in AI agent for MicroPython, Arduino, ESP32, STM32 and Raspberry Pi Pico development. Code anywhere.",
+  icons: {
+    icon: [
+      { url: "/favicon.ico", sizes: "any" },
+      { url: "/favicon.ico", sizes: "32x32", type: "image/x-icon" },
+      { url: "/favicon.ico", sizes: "48x48", type: "image/x-icon" },
+      { url: "/favicon.ico", sizes: "128x128", type: "image/x-icon" },
+      { url: "/favicon.ico", sizes: "256x256", type: "image/x-icon" }
+    ],
+    shortcut: "/favicon.ico",
+    apple: "/favicon.ico",
+  },
   keywords: [
     "mobile IDE",
     "Arduino IDE",
@@ -35,7 +45,7 @@ export const metadata: Metadata = {
   authors: [{ name: "Stratum Studio" }],
   openGraph: {
     title: "Stratum Studio - Mobile IDE with AI Agent",
-    description: "Code Arduino, ESP32, Pico from your phone. AI-powered autocompletion.",
+    description: "Code Arduino, ESP32, Pico from your desktop/phone. AI-powered autocompletion.",
     url: "https://stratum-studio.vercel.app",
     siteName: "Stratum Studio",
     images: [{ url: "/og-image.png", width: 1200, height: 630 }],
@@ -90,7 +100,6 @@ export default function RootLayout({
         ` }} />
       </head>
       <body className="min-h-screen antialiased font-sans" style={{ background: "var(--bg)", color: "var(--text)" }}>
-        <ThemeToggle />
         {children}
       </body>
     </html>

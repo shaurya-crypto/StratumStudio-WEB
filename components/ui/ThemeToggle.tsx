@@ -22,12 +22,12 @@ export default function ThemeToggle() {
     document.documentElement.classList.toggle("dark", next === "dark");
   };
 
-  if (!mounted) return null;
+  if (!mounted) return <div className="w-10 h-10" />;
 
   return (
     <button
       onClick={toggle}
-      className="fixed top-5 right-5 z-[100] flex h-11 w-11 items-center justify-center rounded-full border transition-all duration-300 hover:scale-110 active:scale-95"
+      className="flex h-10 w-10 items-center justify-center rounded-full border hover:scale-110 active:scale-95 transition-all duration-300"
       style={{
         background: "var(--bg-elevated)",
         borderColor: "var(--border-strong)",

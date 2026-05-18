@@ -31,10 +31,8 @@ const GlowCard = memo(function GlowCard({ icon: Icon, title, description, index,
       onMouseMove={handleMouseMove}
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
-      className={`group relative overflow-hidden rounded-3xl p-8 transition-all duration-300 hover:scale-[1.02] animate-fade-up ${className}`}
+      className={`glass group relative overflow-hidden rounded-3xl p-8 transition-all duration-300 hover:scale-[1.02] animate-fade-up ${className}`}
       style={{
-        background: "var(--bg-elevated)",
-        border: "1px solid var(--border)",
         boxShadow: isHovered ? "var(--shadow-hover)" : "var(--shadow)",
         transform: isHovered
           ? `perspective(800px) rotateX(${(mousePos.y - 100) * -0.01}deg) rotateY(${(mousePos.x - 150) * 0.01}deg) scale(1.02)`

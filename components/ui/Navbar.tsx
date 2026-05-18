@@ -2,11 +2,11 @@
 
 import { useState, useEffect } from "react";
 import { Zap, Menu, X } from "lucide-react";
+import ThemeToggle from "./ThemeToggle";
 
 const navLinks = [
   { label: "Features", href: "#features" },
   { label: "Showcase", href: "#showcase" },
-  // { label: "Download", href: "#download" },
 ];
 
 function AnimatedLogo() {
@@ -19,9 +19,9 @@ function AnimatedLogo() {
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
-      <div className="relative flex h-8 w-8 items-center justify-center rounded-xl transition-transform duration-300 group-hover:rotate-12 group-hover:scale-105"
-        style={{ background: "linear-gradient(135deg, #4285f4, #ea4335, #fbbc04, #34a853)" }}>
-        <Zap className="h-4 w-4 text-white" />
+      <div className="relative flex h-8 w-8 items-center justify-center rounded-xl transition-transform duration-300 group-hover:rotate-12 group-hover:scale-105 overflow-hidden border border-white/10"
+        style={{ background: "linear-gradient(135deg, rgba(66, 133, 244, 0.15), rgba(234, 67, 53, 0.15))" }}>
+        <img src="/favicon.ico" alt="Logo" className="h-[3000px] w-[2600px] object-contain" />
       </div>
       <span className="text-lg font-bold tracking-tight" style={{ color: "var(--text)" }}>
         {"Stratum".split("").map((char, i) => (
@@ -67,37 +67,27 @@ function NavLink({ label, href }: { label: string; href: string }) {
 }
 
 export default function Navbar() {
-  const [scrolled, setScrolled] = useState(false);
   const [mobileOpen, setMobileOpen] = useState(false);
-
-  useEffect(() => {
-    const handleScroll = () => setScrolled(window.scrollY > 40);
-    window.addEventListener("scroll", handleScroll, { passive: true });
-    handleScroll();
-    return () => window.removeEventListener("scroll", handleScroll);
-  }, []);
 
   return (
     <nav
-      className="fixed top-0 left-0 right-0 z-50 animate-fade-up"
-      style={{ animationDelay: "0.5s", animationFillMode: "both" }}
+      className="fixed top-4 left-1/2 -translate-x-1/2 z-[100] w-[95%] max-w-7xl rounded-3xl glass px-6 py-3 md:py-4 transition-all duration-300 animate-fade-up"
+      style={{ animationDelay: "0.2s", animationFillMode: "both" }}
     >
-      <div
-        className="transition-all duration-400"
-        style={{
-          backgroundColor: scrolled ? "color-mix(in srgb, var(--bg) 85%, transparent)" : "transparent",
-          backdropFilter: scrolled ? "blur(24px) saturate(1.2)" : "blur(0px)",
-          borderBottom: scrolled ? "1px solid var(--border)" : "1px solid transparent",
-        }}
-      >
-        <div className="mx-auto flex h-16 max-w-7xl items-center justify-between px-6">
-          <AnimatedLogo />
+      <div className="flex items-center justify-between">
+        <AnimatedLogo />
 
-          {/* Desktop links */}
-          <div className="hidden items-center gap-8 md:flex">
+        {/* Desktop links + actions */}
+        <div className="hidden items-center gap-6 md:flex">
+          <div className="flex items-center gap-8 mr-2">
             {navLinks.map((link) => (
               <NavLink key={link.href} {...link} />
             ))}
+          </div>
+
+          {/* Integrated Theme Toggle + Download button */}
+          <div className="flex items-center gap-4">
+            <ThemeToggle />
             <a
               href="#download"
               className="btn-primary group relative overflow-hidden text-sm"
@@ -106,12 +96,21 @@ export default function Navbar() {
               Download
             </a>
           </div>
+        </div>
 
-          {/* Mobile menu button */}
+        {/* Mobile actions (Logo | ThemeToggle | HamburgerMenu) */}
+        <div className="md:hidden flex items-center gap-3">
+          <ThemeToggle />
+
           <button
             onClick={() => setMobileOpen(!mobileOpen)}
-            className="flex h-9 w-9 items-center justify-center rounded-lg md:hidden transition-colors"
-            style={{ color: "var(--text-muted)" }}
+            className="flex h-10 w-10 items-center justify-center rounded-full border transition-all duration-300 active:scale-95"
+            style={{
+              background: "var(--bg-elevated)",
+              borderColor: "var(--border-strong)",
+              boxShadow: "var(--shadow)",
+              color: "var(--text)",
+            }}
             aria-label="Toggle menu"
           >
             {mobileOpen ? <X className="h-5 w-5" /> : <Menu className="h-5 w-5" />}
@@ -119,25 +118,22 @@ export default function Navbar() {
         </div>
       </div>
 
-      {/* Mobile menu */}
+      {/* Mobile menu expansion */}
       <div
-        className={`overflow-hidden px-6 md:hidden transition-all duration-300 ${mobileOpen ? "max-h-64 pt-4 pb-6 opacity-100" : "max-h-0 py-0 opacity-0"}`}
-        style={{
-          background: "color-mix(in srgb, var(--bg) 95%, transparent)",
-          backdropFilter: "blur(24px)",
-          borderTop: "1px solid var(--border)",
-        }}
+        className={`overflow-hidden transition-all duration-300 ${mobileOpen ? "max-h-64 mt-4 opacity-100" : "max-h-0 opacity-0"}`}
       >
-        {navLinks.map((link) => (
-          <a key={link.href} href={link.href} onClick={() => setMobileOpen(false)}
-            className="block py-3 text-sm font-medium transition-colors"
-            style={{ color: "var(--text-muted)" }}>
-            {link.label}
+        <div className="pt-2 pb-4 flex flex-col gap-3 border-t border-white/[0.04] mt-2">
+          {navLinks.map((link) => (
+            <a key={link.href} href={link.href} onClick={() => setMobileOpen(false)}
+              className="block py-2 text-sm font-medium transition-colors px-2 rounded-lg hover:bg-white/5"
+              style={{ color: "var(--text-muted)" }}>
+              {link.label}
+            </a>
+          ))}
+          <a href="#download" onClick={() => setMobileOpen(false)} className="btn-primary block text-center text-sm py-2.5 mt-1">
+            Download
           </a>
-        ))}
-        <a href="#download" onClick={() => setMobileOpen(false)} className="btn-primary mt-3 block text-center text-sm">
-          Download
-        </a>
+        </div>
       </div>
     </nav>
   );

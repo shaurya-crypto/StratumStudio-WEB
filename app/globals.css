@@ -357,3 +357,53 @@ html {
   .gradient-orb-1 { width: 300px; height: 300px; }
   .gradient-orb-2 { width: 250px; height: 250px; }
 }
+
+/* ── Pro-Level Glassmorphism System ── */
+.glass {
+  background: rgba(255, 255, 255, 0.45);
+  backdrop-filter: blur(24px);
+  -webkit-backdrop-filter: blur(24px);
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 8px 32px rgba(66, 133, 244, 0.04);
+  position: relative;
+}
+
+.dark .glass {
+  background: rgba(18, 18, 42, 0.45);
+  border: 1px solid rgba(255, 255, 255, 0.04);
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.3);
+}
+
+.glass::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+  border-radius: inherit;
+  padding: 1px;
+  background: linear-gradient(145deg, rgba(0, 0, 0, 0.08), transparent);
+  mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  mask-composite: xor;
+  -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+  -webkit-mask-composite: xor;
+  pointer-events: none;
+}
+
+.dark .glass::before {
+  background: linear-gradient(145deg, rgba(255, 255, 255, 0.15), transparent);
+}
+
+/* ── Floating glass particles ── */
+.particle {
+  position: absolute;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: rgba(66, 133, 244, 0.1);
+  backdrop-filter: blur(4px);
+  pointer-events: none;
+  z-index: 1;
+}
+
+.dark .particle {
+  background: rgba(255, 255, 255, 0.08);
+}

@@ -1,13 +1,13 @@
 "use client";
 
 import React, { Suspense, useState, useEffect } from "react";
-import { Zap, Code2, Gamepad2, Radio, ChevronDown, Monitor, Smartphone, Laptop, Terminal } from "lucide-react";
+import { Zap, Code2, Gamepad2, Radio, ChevronDown, Monitor, Smartphone, Laptop, Terminal, Apple } from "lucide-react";
 import dynamic from "next/dynamic";
 import Navbar from "@/components/ui/Navbar";
 import GlowCard from "@/components/ui/GlowCard";
-import DownloadButton from "@/components/ui/DownloadButton";
 import DeviceMockup from "@/components/ui/DeviceMockup";
 import AIProviderShowcase from "@/components/ui/AIProviderShowcase";
+import DeviceStage from "@/components/ui/DeviceStage";
 import { SmoothScrollProvider } from "@/hooks/useSmoothScroll";
 
 const BoardCarousel = dynamic(() => import("@/components/3d/BoardCarousel"), {
@@ -44,6 +44,14 @@ const features = [
     title: "MicroPython Ready",
     description: "Flash firmware, upload scripts, and monitor serial output in real-time. One-click deploy directly to your connected device.",
   },
+];
+
+/* ── Download platforms ── */
+const platforms = [
+  { icon: <Monitor size={22}/>, os: "Windows",  sub: "Windows 10/11 • .exe",    href: "https://github.com/shaurya-crypto/StratumStudio/releases/download/2.0.0/Stratum-Studio.exe"   },
+  { icon: <Apple size={22}/>,   os: "macOS",    sub: "macOS 12+ • Coming Soon",         href: "#"   },
+  { icon: <Terminal size={22}/>,os: "Linux",    sub: "Ubuntu/Debian • Coming Soon", href: "#" },
+  { icon: <Smartphone size={22}/>, os: "Android", sub: "Android • Coming Soon",   href: "#"         },
 ];
 
 /* ── Social Icons ── */
@@ -113,10 +121,10 @@ export default function HomePage() {
         "applicationCategory": "DeveloperApplication",
         "operatingSystem": "Windows, macOS, Linux, Android, iOS",
         "offers": { "@type": "Offer", "price": "0", "priceCurrency": "USD" },
-        "description": "AI-powered mobile IDE for embedded development",
+        "description": "AI-powered desktop & mobile IDE for embedded development",
         "screenshot": "https://stratum-studio.vercel.app/screenshot.png"
       }) }} />
-      <h1 className="sr-only">Stratum Studio - Mobile IDE with AI Agent</h1>
+      <h1 className="sr-only">Stratum Studio - Desktop & Mobile IDE with AI Agent</h1>
       <Navbar />
 
       {/* ====== SECTION 1: HERO ====== */}
@@ -212,8 +220,8 @@ export default function HomePage() {
         <div className="mx-auto max-w-5xl px-6 pt-24 pb-8 text-center">
           <div className="animate-fade-up">
             <span
-              className="mb-4 inline-block rounded-full border px-4 py-1.5 text-xs font-semibold tracking-widest uppercase"
-              style={{ borderColor: "var(--border-strong)", background: "var(--bg-secondary)", color: "var(--primary)" }}
+              className="glass mb-4 inline-block rounded-full px-4 py-1.5 text-xs font-semibold tracking-widest uppercase"
+              style={{ color: "var(--primary)" }}
             >
               Hardware
             </span>
@@ -245,8 +253,8 @@ export default function HomePage() {
             className="mb-16 text-center animate-fade-up"
           >
             <span
-              className="mb-4 inline-block rounded-full border px-4 py-1.5 text-xs font-semibold tracking-widest uppercase"
-              style={{ borderColor: "var(--border-strong)", background: "var(--bg-secondary)", color: "var(--accent)" }}
+              className="glass mb-4 inline-block rounded-full px-4 py-1.5 text-xs font-semibold tracking-widest uppercase"
+              style={{ color: "var(--accent)" }}
             >
               Features
             </span>
@@ -286,49 +294,95 @@ export default function HomePage() {
       </section>
 
       {/* ====== SECTION 4: DOWNLOAD ====== */}
-      <section id="download" className="relative overflow-hidden py-32 premium-bg">
-        <div className="gradient-orb gradient-orb-1" style={{ top: "-30%", left: "20%" }} />
-        <div className="relative mx-auto max-w-3xl px-6 text-center z-10">
-          <div
-            className="animate-fade-up"
-          >
-            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl lg:text-5xl" style={{ color: "var(--text)" }}>
-              Download Now. <span style={{ color: "var(--text-muted)" }}>No account needed.</span>
-            </h2>
-            <p className="mx-auto mt-4 max-w-md" style={{ color: "var(--text-muted)" }}>
-              Download Stratum Studio and start coding for your hardware in under 60 seconds.
-            </p>
-          </div>
+      <section id="download" className="relative min-h-screen flex flex-col md:flex-row items-center bg-[var(--bg)] overflow-hidden py-20 md:py-0">
+        
+        {/* Floating Orbs behind laptop */}
+        <div className="orb-1 pointer-events-none" />
+        <div className="orb-2 pointer-events-none" />
 
-          <div className="mx-auto mt-12 grid max-w-xl grid-cols-1 sm:grid-cols-2 gap-4">
-            <DownloadButton platform="Windows" subtitle=".exe installer" icon={<Monitor className="h-5 w-5" />} />
-            <DownloadButton platform="macOS" subtitle="Universal binary" icon={<Laptop className="h-5 w-5" />} />
-            <DownloadButton platform="Android" subtitle=".apk direct" icon={<Smartphone className="h-5 w-5" />} />
-            <DownloadButton platform="Linux" subtitle=".AppImage" icon={<Terminal className="h-5 w-5" />} />
-          </div>
-
-          <p
-            className="mt-10 text-sm tracking-wide font-medium animate-fade-up"
-            style={{ animationDelay: "0.3s", animationFillMode: "both", color: "var(--text-subtle)" }}
-          >
-            Open Source &middot; Free Forever &middot; Built for Engineers
+        {/* LEFT — Download buttons */}
+        <div className="w-full md:w-2/5 z-10 px-6 md:px-12 lg:px-20 flex flex-col justify-center">
+          <p className="text-[var(--primary)] text-sm font-semibold tracking-widest uppercase mb-4 animate-fade-up">
+            Currently available on Windows and Android
           </p>
+          <h2 className="text-4xl md:text-5xl lg:text-6xl font-bold leading-tight mb-4 animate-fade-up" style={{ color: "var(--text)" }}>
+            Download<br/>
+            <span className="bg-gradient-to-r from-[var(--primary)] to-[var(--accent)] bg-clip-text text-transparent">
+              Stratum Studio
+            </span>
+          </h2>
+          <p className="text-lg mb-10 animate-fade-up" style={{ color: "var(--text-muted)" }}>
+            Code smarter. Build faster. From anywhere.
+          </p>
+          
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-1 gap-4 w-full max-w-md animate-fade-up">
+            {platforms.map((p) => (
+              <a
+                key={p.os}
+                href={p.href}
+                className="glass group relative flex items-center gap-4 w-full px-6 py-4 rounded-2xl hover:border-[var(--primary)] hover:shadow-xl hover:shadow-[var(--shadow-hover)] hover:scale-[1.03] hover:-translate-y-0.5 transition-all duration-300 cursor-pointer overflow-hidden after:absolute after:inset-0 after:bg-gradient-to-r after:from-transparent after:via-[var(--primary)]/10 after:to-transparent after:translate-x-[-200%] group-hover:after:translate-x-[200%] after:transition-transform after:duration-700"
+              >
+                <div className="flex h-10 w-10 items-center justify-center rounded-xl transition-all duration-500"
+                  style={{
+                    background: "var(--bg-secondary)",
+                    color: "var(--text-muted)",
+                    border: "1px solid var(--border)",
+                  }}>
+                  {p.icon}
+                </div>
+                <div>
+                  <div className="text-sm font-bold" style={{ color: "var(--text)" }}>{p.os}</div>
+                  <div className="text-xs" style={{ color: "var(--text-muted)" }}>{p.sub}</div>
+                </div>
+                <span className="ml-auto transition-all duration-300 group-hover:translate-x-1" style={{ color: "var(--text-subtle)" }}>
+                  →
+                </span>
+              </a>
+            ))}
+          </div>
         </div>
+
+        {/* RIGHT — Device Stage animation */}
+        <div className="w-full md:w-3/5 flex items-center justify-center relative mt-12 md:mt-0 z-10">
+          <DeviceStage />
+        </div>
+
+        {/* Custom CSS block for floating orbs */}
+        <style jsx>{`
+          .orb-1 {
+            position: absolute; width: 400px; height: 400px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(66, 133, 244, 0.12), transparent 70%);
+            animation: float 8s ease-in-out infinite;
+            top: 10%; right: 5%; filter: blur(60px);
+          }
+          .orb-2 {
+            position: absolute; width: 300px; height: 300px;
+            border-radius: 50%;
+            background: radial-gradient(circle, rgba(52,211,153,0.08), transparent 70%);
+            animation: float 10s ease-in-out infinite reverse;
+            bottom: 10%; right: 20%; filter: blur(80px);
+          }
+          @keyframes float {
+            0%,100% { transform: translateY(0) scale(1); }
+            50%      { transform: translateY(-30px) scale(1.05); }
+          }
+        `}</style>
       </section>
 
       {/* ====== SECTION 5: FOOTER ====== */}
       <footer className="py-10 premium-bg" style={{ borderTop: "1px solid var(--border)" }}>
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-6 px-6 sm:flex-row">
-          <a href="#" className="flex items-center gap-2">
-            <div className="flex h-8 w-8 items-center justify-center rounded-xl" style={{ background: "linear-gradient(135deg, #4285f4, #ea4335, #fbbc04, #34a853)" }}>
-              <Zap className="h-4 w-4 text-white" />
+          <a href="#" className="flex items-center gap-2 group">
+            <div className="flex h-8 w-8 items-center justify-center rounded-xl overflow-hidden border border-white/10" style={{ background: "linear-gradient(135deg, rgba(66, 133, 244, 0.15), rgba(234, 67, 53, 0.15))" }}>
+              <img src="/favicon.ico" alt="Logo" className="h-[26000px] w-[26000px] object-contain" />
             </div>
             <span className="font-sans text-sm font-bold" style={{ color: "var(--text)" }}>
               Stratum<span style={{ color: "var(--primary)" }}>Studio</span>
             </span>
           </a>
 
-          <p className="text-sm font-medium" style={{ color: "var(--text-muted)" }}>Made with care for the hardware community.</p>
+          <p className="text-sm font-medium" style={{ color: "var(--text-muted)" }}>Made with care for the hardware community | By shaurya</p>
 
           <div className="flex items-center gap-4">
             <a href="https://github.com/shaurya-crypto" target="_blank" rel="noopener noreferrer" className="flex h-9 w-9 items-center justify-center rounded-lg transition-all hover:scale-105 active:scale-95" style={{ color: "var(--text-muted)" }} aria-label="GitHub">
