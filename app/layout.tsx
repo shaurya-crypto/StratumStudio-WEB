@@ -1,18 +1,5 @@
 import type { Metadata, Viewport } from "next";
-import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
-
-const inter = Inter({
-  variable: "--font-sans",
-  subsets: ["latin"],
-  display: "swap",
-});
-
-const jetbrainsMono = JetBrains_Mono({
-  variable: "--font-mono",
-  subsets: ["latin"],
-  display: "swap",
-});
 
 export const metadata: Metadata = {
   metadataBase: new URL("https://stratum-studio.vercel.app"),
@@ -87,7 +74,11 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className={`${inter.variable} ${jetbrainsMono.variable} dark`}
+      className="dark"
+      style={{
+        ["--font-sans" as any]: "Inter, system-ui, -apple-system, sans-serif",
+        ["--font-mono" as any]: "'JetBrains Mono', monospace",
+      }}
       suppressHydrationWarning
     >
       <head>

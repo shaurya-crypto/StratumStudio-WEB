@@ -121,6 +121,7 @@ html {
   --sidebar-ring: #4285f4;
   --ease-premium: cubic-bezier(0.16, 1, 0.3, 1);
   --ease-out-expo: cubic-bezier(0.19, 1, 0.22, 1);
+  --navbar-bg: rgba(255, 255, 255, 0.65);
 }
 
 .dark {
@@ -129,6 +130,7 @@ html {
   --bg-secondary: #050505;
   --bg-elevated: #0a0a0a;
   --bg-canvas: #000000;
+  --navbar-bg: rgba(10, 10, 10, 0.65);
   
   --text: #ffffff;
   --text-muted: #a1a1aa;

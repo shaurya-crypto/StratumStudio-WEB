@@ -15,11 +15,6 @@ const BoardCarousel = dynamic(() => import("@/components/3d/BoardCarousel"), {
   loading: () => <div className="h-[90vh]" style={{ background: "var(--bg)" }} />,
 });
 
-const HeroCanvas = dynamic(() => import("@/components/canvas/HeroCanvas"), {
-  ssr: false,
-  loading: () => null,
-});
-
 const TITLE_PARTS = [
   { text: "Stratum ", colored: false },
   { text: "Studio", colored: true },
@@ -73,27 +68,27 @@ function XIcon({ className }: { className?: string }) {
 
 export default function HomePage() {
   const heroRef = React.useRef<HTMLElement>(null);
-  const [show3D, setShow3D] = useState(false);
   const [showCarousel, setShowCarousel] = useState(false);
   const carouselRef = React.useRef<HTMLElement>(null);
 
-  useEffect(() => {
-    let idleCallbackId: number;
-    let fallbackTimeoutId: NodeJS.Timeout;
+  // Theme-aware state tracking
+  const [isDark, setIsDark] = useState(true);
 
-    if ('requestIdleCallback' in window) {
-      idleCallbackId = (window as any).requestIdleCallback(() => setShow3D(true), { timeout: 2000 });
-    } else {
-      fallbackTimeoutId = setTimeout(() => setShow3D(true), 500);
-    }
+  useEffect(() => {
+    // 1. Initial theme check
+    setIsDark(document.documentElement.classList.contains("dark"));
+
+    // 2. Observe class swaps on <html> for instant theme video changes
+    const observer = new MutationObserver(() => {
+      setIsDark(document.documentElement.classList.contains("dark"));
+    });
+    observer.observe(document.documentElement, {
+      attributes: true,
+      attributeFilter: ["class"],
+    });
 
     return () => {
-      if ('cancelIdleCallback' in window && idleCallbackId) {
-        (window as any).cancelIdleCallback(idleCallbackId);
-      }
-      if (fallbackTimeoutId) {
-        clearTimeout(fallbackTimeoutId);
-      }
+      observer.disconnect();
     };
   }, []);
 
@@ -125,22 +120,74 @@ export default function HomePage() {
         "screenshot": "https://stratum-studio.vercel.app/screenshot.png"
       }) }} />
       <h1 className="sr-only">Stratum Studio - Desktop & Mobile IDE with AI Agent</h1>
+      
+      {/* Floating absolute navbar directly above full screen video */}
       <Navbar />
 
       {/* ====== SECTION 1: HERO ====== */}
-      <section ref={heroRef} className="relative h-screen overflow-hidden premium-bg flex items-center justify-center">
-        {/* Background Gradients */}
-        <div className="gradient-orb gradient-orb-1" />
-        <div className="gradient-orb gradient-orb-2" />
+      <section ref={heroRef} className="relative h-screen overflow-hidden premium-bg flex items-center justify-center m-0 p-0">
+        
+        {/* Layer 1: Background Videos (Both loaded concurrently for seamless 600ms fade transition without flickering) */}
+        <div className="absolute inset-0 z-0 w-full h-full overflow-hidden select-none pointer-events-none">
+          {/* Dark Mode Video */}
+          <video
+            autoPlay
+            loop
+            muted
+            playsInline
+            preload="auto"
+            className="absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ease-in-out"
+            style={{
+              objectPosition: "center top",
+              animation: "cinematic-zoom 25s linear infinite alternate",
+              transform: "translateZ(0)",
+              opacity: isDark ? 1 : 0,
+              filter: "brightness(.65) contrast(1.15) saturate(1.05)",
+            }}
+          >
+            <source src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260418_080021_d598092b-c4c2-4e53-8e46-94cf9064cd50.mp4" type="video/mp4" />
+          </video>
 
-        <Suspense fallback={<div className="absolute inset-0" style={{ background: "var(--bg)" }} />}>
-          {show3D && <HeroCanvas />}
-        </Suspense>
+          {/* Light Mode Video */}
+          <video
+            autoPlay
+            loop
+            muted
+            playsInline
+            preload="auto"
+            className="absolute inset-0 w-full h-full object-cover transition-opacity duration-700 ease-in-out"
+            style={{
+              objectPosition: "center top",
+              animation: "cinematic-zoom 25s linear infinite alternate",
+              transform: "translateZ(0)",
+              opacity: isDark ? 0 : 1,
+              filter: "brightness(1.02) contrast(1.12) saturate(1.1)",
+            }}
+          >
+            <source src="https://d8j0ntlcm91z4.cloudfront.net/user_38xzZboKViGWJOttwIXH07lWA1P/hf_20260331_074327_a4d6275d-82d9-4c83-bfbe-f1fb2213c17c.mp4" type="video/mp4" />
+          </video>
+        </div>
 
-        {/* Dynamic theme-aware overlays */}
-        <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[var(--bg)]" />
-        <div className="pointer-events-none absolute inset-0" style={{ background: "radial-gradient(ellipse at center, transparent 30%, var(--bg) 80%)" }} />
+        {/* Layer 2: Theme-aware gradient overlays */}
+        <div 
+          className="absolute inset-0 z-[1] pointer-events-none transition-all duration-700 ease-in-out"
+          style={{
+            background: isDark
+              ? "radial-gradient(circle at center, rgba(79,140,255,0.10), transparent 50%), linear-gradient(180deg, rgba(0,0,0,0.45), rgba(0,0,0,0.70))"
+              : "radial-gradient(circle at top, rgba(79,140,255,0.06), transparent 40%), linear-gradient(180deg, rgba(255,255,255,0.12), rgba(255,255,255,0.22))"
+          }}
+        />
 
+        {/* Layer 3: Particles / Glows / Subtle effects */}
+        <div className="absolute inset-0 z-[2] pointer-events-none">
+          <div className="gradient-orb gradient-orb-1" />
+          <div className="gradient-orb gradient-orb-2" />
+        </div>
+
+        {/* Dynamic theme-aware page bottom fade */}
+        <div className="pointer-events-none absolute inset-0 z-[3] bg-gradient-to-b from-transparent via-transparent to-[var(--bg)]" />
+
+        {/* Layer 4: Hero Content */}
         <div className="relative z-10 flex flex-col items-center justify-center px-6 text-center max-w-4xl mx-auto pt-16">
           <div className="max-w-3xl">
             {/* Title — character by character */}
@@ -157,7 +204,7 @@ export default function HomePage() {
                     style={{
                       animationDelay: `${(part.colored ? 7 : 0) * 0.04 + i * 0.04}s`,
                       color: part.colored ? "transparent" : "var(--text)",
-                      backgroundImage: part.colored ? "linear-gradient(135deg, var(--primary), var(--cyan))" : "none",
+                      backgroundImage: part.colored ? "linear-gradient(135deg, var(--primary), var(--purple))" : "none",
                       backgroundClip: part.colored ? "text" : "unset",
                       WebkitBackgroundClip: part.colored ? "text" : "unset",
                       transition: "color 0.3s ease",
@@ -213,6 +260,13 @@ export default function HomePage() {
             </div>
           </div>
         </div>
+
+        <style jsx global>{`
+          @keyframes cinematic-zoom {
+            0% { transform: scale(1) translateZ(0); }
+            100% { transform: scale(1.05) translateZ(0); }
+          }
+        `}</style>
       </section>
 
       {/* ====== CINEMATIC BOARD CAROUSEL ====== */}
@@ -375,7 +429,7 @@ export default function HomePage() {
         <div className="mx-auto flex max-w-6xl flex-col items-center justify-between gap-6 px-6 sm:flex-row">
           <a href="#" className="flex items-center gap-2 group">
             <div className="flex h-8 w-8 items-center justify-center rounded-xl overflow-hidden border border-white/10" style={{ background: "linear-gradient(135deg, rgba(66, 133, 244, 0.15), rgba(234, 67, 53, 0.15))" }}>
-              <img src="/favicon.ico" alt="Logo" className="h-[26000px] w-[26000px] object-contain" />
+              <img src="/favicon.ico" alt="Logo" className="h-[26px] w-[26px] object-contain" />
             </div>
             <span className="font-sans text-sm font-bold" style={{ color: "var(--text)" }}>
               Stratum<span style={{ color: "var(--primary)" }}>Studio</span>

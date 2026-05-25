@@ -71,8 +71,16 @@ export default function Navbar() {
 
   return (
     <nav
-      className="fixed top-4 left-1/2 -translate-x-1/2 z-[100] w-[95%] max-w-7xl rounded-3xl glass px-6 py-3 md:py-4 transition-all duration-300 animate-fade-up"
-      style={{ animationDelay: "0.2s", animationFillMode: "both" }}
+      className="fixed top-4 left-1/2 -translate-x-1/2 z-[100] w-[95%] max-w-7xl rounded-3xl px-6 py-3 md:py-4 transition-all duration-300 animate-fade-up border"
+      style={{
+        animationDelay: "0.2s",
+        animationFillMode: "both",
+        background: "var(--navbar-bg)",
+        backdropFilter: "blur(24px)",
+        WebkitBackdropFilter: "blur(24px)",
+        borderColor: "var(--border-strong)",
+        boxShadow: "var(--shadow)",
+      }}
     >
       <div className="flex items-center justify-between">
         <AnimatedLogo />
